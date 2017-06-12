@@ -76,3 +76,4 @@ hs_err_pid*
 errors.txt
 *.bat
 *.sh
+res/settings.txt
