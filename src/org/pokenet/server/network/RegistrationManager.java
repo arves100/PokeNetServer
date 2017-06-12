@@ -79,7 +79,7 @@ public class RegistrationManager implements Runnable {
 			return;
 		}
 		m_database = new MySqlManager();
-		if(m_database.connect(GameServer.getDatabaseHost(), GameServer.getDatabaseUsername(), GameServer.getDatabasePassword())) {
+		if(m_database.connect(GameServer.getDatabaseHost(), GameServer.getDatabasePort(), GameServer.getDatabaseUsername(), GameServer.getDatabasePassword())) {
 			m_database.selectDatabase(GameServer.getDatabaseName());
 			int s = Integer.parseInt(info[4]);
 			/*

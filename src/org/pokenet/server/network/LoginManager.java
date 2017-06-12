@@ -77,7 +77,7 @@ public class LoginManager implements Runnable {
 			}
 			//First connect to the database
 			m_database = new MySqlManager();
-			if(!m_database.connect(GameServer.getDatabaseHost(), GameServer.getDatabaseUsername(), GameServer.getDatabasePassword())) {
+			if(!m_database.connect(GameServer.getDatabaseHost(), GameServer.getDatabasePort(), GameServer.getDatabaseUsername(), GameServer.getDatabasePassword())) {
 				session.write("l1");
 				return;
 			}
@@ -284,7 +284,7 @@ public class LoginManager implements Runnable {
 	private void changePass(String username, String newPassword, String oldPassword, IoSession session) {
 		m_database = new MySqlManager();
 	
-		if(m_database.connect(GameServer.getDatabaseHost(), GameServer.getDatabaseUsername(), GameServer.getDatabasePassword())) {
+		if(m_database.connect(GameServer.getDatabaseHost(),GameServer.getDatabasePort(), GameServer.getDatabaseUsername(), GameServer.getDatabasePassword())) {
 			if(m_database.selectDatabase(GameServer.getDatabaseName())) {
 				ResultSet result = m_database.query("SELECT * FROM pn_members WHERE username='" + MySqlManager.parseSQL(username) + "'");
 				try {

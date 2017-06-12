@@ -190,6 +190,7 @@ public class PlayerChar extends Char implements Battleable, Tradeable {
 				int id = m_boxes[box].getPokemon(slot).getDatabaseID();
 				MySqlManager m = new MySqlManager();
 				if(m.connect(GameServer.getDatabaseHost(), 
+						GameServer.getDatabasePort(),
 						GameServer.getDatabaseUsername(),
 						GameServer.getDatabasePassword())) {
 					m.selectDatabase(GameServer.getDatabaseName());

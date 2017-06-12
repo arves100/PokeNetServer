@@ -25,6 +25,7 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.pokenet.server.network.MySqlManager;
 import org.pokenet.server.network.TcpProtocolHandler;
 
 /**
@@ -56,9 +57,9 @@ public class GameServer {
 	private static GameServer m_instance;
 	private static ServiceManager m_serviceManager;
 	private static int m_maxPlayers, m_movementThreads;
-	private static String m_dbServer, m_dbName, m_dbUsername, m_dbPassword, m_serverName;
+	private static String m_dbServer, m_dbName, m_dbUsername, m_dbPassword, m_serverName, m_dbPort;
 	private static boolean m_boolGui;
-	private JTextField m_dbS, m_dbN, m_dbU, m_name;
+	private JTextField m_dbS, m_dbN, m_dbU, m_name, m_port;
 	private JPasswordField m_dbP;
 	private JButton m_start, m_stop, m_set, m_exit;
 	private int m_highest;
@@ -207,13 +208,35 @@ public class GameServer {
 		}
 	}
 	
+	private boolean testMySQL() {
+		if (!m_boolGui)
+			return false;
+		
+		m_dbServer = m_dbS.getText();
+		m_dbName = m_dbN.getText();
+		m_dbUsername = m_dbU.getText();
+		m_dbPassword = new String(m_dbP.getPassword());
+		m_serverName = m_name.getText();	
+		m_dbPort = m_port.getText();
+		
+		MySqlManager mngr = new MySqlManager();
+		if (!mngr.connect(m_dbServer, m_dbPort, m_dbUsername, m_dbPassword))
+			return false;
+		
+		if (!mngr.selectDatabase(m_dbName))
+			return false;
+		
+		mngr.close();
+		return true;
+	}
+	
 	/**
 	 * Generates the gui-version of the server
 	 */
 	private void createGui() {
 		m_gui = new JFrame();
 		m_gui.setTitle("Pokenet Server");
-		m_gui.setSize(148, 340);
+		m_gui.setSize(270, 390);
 		m_gui.setDefaultCloseOperation(0); //DO_NOTHING_ON_CLOSE
 		m_gui.addWindowListener(new WindowAdapter() {
 			@Override
@@ -228,21 +251,29 @@ public class GameServer {
 		/*
 		 * Set up the buttons
 		 */
+		
+		
 		m_pAmount = new JLabel("0 players online");
 		m_pAmount.setSize(160, 16);
-		m_pAmount.setLocation(4, 4);
+		m_pAmount.setLocation(130 - 60, 4);
 		m_pAmount.setVisible(true);
 		m_gui.getContentPane().add(m_pAmount);
 		
+		JLabel m_pRecordName = new JLabel("Max Players regstred:");
+		m_pRecordName.setSize(160, 16);
+		m_pRecordName.setLocation(4, 20 + 4);
+		m_pRecordName.setVisible(true);
+		m_gui.getContentPane().add(m_pRecordName);
+		
 		m_pHighest = new JLabel("[No record]");
 		m_pHighest.setSize(160, 16);
-		m_pHighest.setLocation(4, 24);
+		m_pHighest.setLocation(160 + 4, 4 + 20);
 		m_pHighest.setVisible(true);
 		m_gui.getContentPane().add(m_pHighest);
 		
 		m_start = new JButton("Start Server");
 		m_start.setSize(128, 24);
-		m_start.setLocation(4, 48);
+		m_start.setLocation(4, 40 + 28);
 		m_start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				start();
@@ -252,7 +283,7 @@ public class GameServer {
 		
 		m_stop = new JButton("Stop Server");
 		m_stop.setSize(128, 24);
-		m_stop.setLocation(4, 74);
+		m_stop.setLocation(128 + 5, 40 + 28);
 		m_stop.setEnabled(false);
 		m_stop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -263,7 +294,7 @@ public class GameServer {
 		
 		m_set = new JButton("Save Settings");
 		m_set.setSize(128, 24);
-		m_set.setLocation(4, 100);
+		m_set.setLocation(4, 60 + 34);
 		m_set.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				saveSettings();
@@ -273,7 +304,7 @@ public class GameServer {
 		
 		m_exit = new JButton("Quit");
 		m_exit.setSize(128, 24);
-		m_exit.setLocation(4, 290);
+		m_exit.setLocation(130 - 60, 296 + 32);
 		m_exit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				exit();
@@ -281,38 +312,94 @@ public class GameServer {
 		});
 		m_gui.getContentPane().add(m_exit);
 		
+		JButton m_test = new JButton("Test MySQL");
+		m_test.setSize(128,24);
+		m_test.setLocation(128+5, 60 + 34);
+		m_test.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (!testMySQL()) {
+					JOptionPane.showMessageDialog(null, "ERROR: MySQL test has failed! Please see the console", "Error", JOptionPane.ERROR_MESSAGE);
+				} else {
+					JOptionPane.showMessageDialog(null, "SUCCESS: MySQL test successfully worked!", "Information", JOptionPane.INFORMATION_MESSAGE);					
+				}
+			}
+		});
+		m_gui.getContentPane().add(m_test);
+		
 		/*
 		 * Settings text boxes
 		 */
+		JLabel m_dbSL = new JLabel();
+		m_dbSL.setSize(160,16);
+		m_dbSL.setText("MySQL Host:");
+		m_dbSL.setLocation(4, 128);
+		m_gui.getContentPane().add(m_dbSL);
+		
 		m_dbS = new JTextField();
 		m_dbS.setSize(128, 24);
-		m_dbS.setText("MySQL Host");
-		m_dbS.setLocation(4, 128);
+		m_dbS.setText("127.0.0.1");
+		m_dbS.setLocation(128 + 5, 128);
 		m_gui.getContentPane().add(m_dbS);
+		
+		JLabel m_dbNL = new JLabel();
+		m_dbNL.setSize(160,16);
+		m_dbNL.setText("Database Name:");
+		m_dbNL.setLocation(4, 160 );
+		m_gui.getContentPane().add(m_dbNL);		
 		
 		m_dbN = new JTextField();
 		m_dbN.setSize(128, 24);
-		m_dbN.setText("MySQL Database Name");
-		m_dbN.setLocation(4, 160);
+		m_dbN.setText("pokenet");
+		m_dbN.setLocation(128 + 5, 160);
 		m_gui.getContentPane().add(m_dbN);
+	
+		JLabel m_dbUL = new JLabel();
+		m_dbUL.setSize(160,16);
+		m_dbUL.setText("MySQL Username:");
+		m_dbUL.setLocation(4, 192 );
+		m_gui.getContentPane().add(m_dbUL);			
 		
 		m_dbU = new JTextField();
 		m_dbU.setSize(128, 24);
-		m_dbU.setText("MySQL Username");
-		m_dbU.setLocation(4, 192);
+		m_dbU.setText("root");
+		m_dbU.setLocation(128 + 5, 192);
 		m_gui.getContentPane().add(m_dbU);
+		
+		JLabel m_dbPL = new JLabel();
+		m_dbPL.setSize(160,16);
+		m_dbPL.setText("MySQL Password:");
+		m_dbPL.setLocation(4, 224 );
+		m_gui.getContentPane().add(m_dbPL);				
 		
 		m_dbP = new JPasswordField();
 		m_dbP.setSize(128, 24);
-		m_dbP.setText("Pass");
-		m_dbP.setLocation(4, 224);
+		m_dbP.setText("");
+		m_dbP.setLocation(128 + 5, 224);
 		m_gui.getContentPane().add(m_dbP);
+		
+		JLabel m_dbSN = new JLabel();
+		m_dbSN.setSize(160,16);
+		m_dbSN.setText("Server name:");
+		m_dbSN.setLocation(4, 260);
+		m_gui.getContentPane().add(m_dbSN);	
 		
 		m_name = new JTextField();
 		m_name.setSize(128, 24);
-		m_name.setText("Your Server Name");
-		m_name.setLocation(4, 260);
+		m_name.setText("PokeNet");
+		m_name.setLocation(128+5, 260);
 		m_gui.getContentPane().add(m_name);
+		
+		JLabel m_dbPN = new JLabel();
+		m_dbPN.setSize(160,16);
+		m_dbPN.setText("MySQL Port:");
+		m_dbPN.setLocation(4, 296);
+		m_gui.getContentPane().add(m_dbPN);	
+		
+		m_port = new JTextField();
+		m_port.setSize(128, 24);
+		m_port.setText("3306");
+		m_port.setLocation(128+5, 296);
+		m_gui.getContentPane().add(m_port);		
 		
 		/*
 		 * Load pre-existing settings if any
@@ -325,6 +412,8 @@ public class GameServer {
 				m_dbN.setText(s.nextLine());
 				m_dbU.setText(s.nextLine());
 				m_name.setText(s.nextLine());
+				m_dbP.setText(s.nextLine());
+				m_port.setText(s.nextLine());
 				s.close();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -347,6 +436,7 @@ public class GameServer {
 			m_dbUsername = m_dbU.getText();
 			m_dbPassword = new String(m_dbP.getPassword());
 			m_serverName = m_name.getText();
+			m_dbPort = m_port.getText();
 			
 			
 			m_serviceManager = new ServiceManager();
@@ -408,6 +498,7 @@ public class GameServer {
 				m_dbUsername = m_dbU.getText();
 				m_dbPassword = new String(m_dbP.getPassword());
 				m_serverName = m_name.getText();
+				m_dbPort = m_port.getText();
 			}
 			/*
 			 * Write to file
@@ -420,7 +511,8 @@ public class GameServer {
 			w.println(m_dbName);
 			w.println(m_dbUsername);
 			w.println(m_serverName);
-			w.println(" ");
+			w.println(m_dbPassword);
+			w.println(m_dbPort);
 			w.flush();
 			w.close();
 		} catch (Exception e) {
@@ -595,6 +687,14 @@ public class GameServer {
 	 */
 	public static String getDatabaseHost() {
 		return m_dbServer;
+	}
+	
+	/**
+	 * Returns the database port
+	 * @return
+	 */
+	public static String getDatabasePort() {
+		return m_dbPort;
 	}
 	
 	/**

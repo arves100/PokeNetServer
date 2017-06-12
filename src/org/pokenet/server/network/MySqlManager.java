@@ -22,14 +22,15 @@ public class MySqlManager {
     /**
      * Connects to the server. Returns true on success.
      * @param server
+     * @param port
      * @param username
      * @param password
      * @return
      */
-    public boolean connect(String server, String username, String password) {
+    public boolean connect(String server, String port, String username, String password) {
         try {
             //Open Connection
-            mysql_connectionURL = "jdbc:mysql://" + server+"?autoReconnect=true";
+            mysql_connectionURL = "jdbc:mysql://" + server+":" + port+ "?autoReconnect=true";
             mysql_connection = DriverManager.getConnection(mysql_connectionURL, username, password);
             if(!mysql_connection.isClosed())
             	return true;

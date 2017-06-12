@@ -92,6 +92,7 @@ public class NetworkService {
 		 */
 		MySqlManager m = new MySqlManager();
 		if(m.connect(GameServer.getDatabaseHost(), 
+				GameServer.getDatabasePort(),
 				GameServer.getDatabaseUsername(),
 				GameServer.getDatabasePassword())) {
 			m.selectDatabase(GameServer.getDatabaseName());

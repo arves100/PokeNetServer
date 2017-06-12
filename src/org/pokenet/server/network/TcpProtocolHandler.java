@@ -311,6 +311,7 @@ public class TcpProtocolHandler extends IoHandlerAdapter {
 								PlayerChar o = m_players.get(message.substring(2));
 								MySqlManager m = new MySqlManager();
 								if(m.connect(GameServer.getDatabaseHost(), 
+										GameServer.getDatabasePort(),
 										GameServer.getDatabaseUsername(), 
 										GameServer.getDatabasePassword())) {
 									m.selectDatabase(GameServer.getDatabaseName());
@@ -325,6 +326,7 @@ public class TcpProtocolHandler extends IoHandlerAdapter {
 							//Unban ip
 							MySqlManager m = new MySqlManager();
 							if(m.connect(GameServer.getDatabaseHost(), 
+									GameServer.getDatabasePort(),
 									GameServer.getDatabaseUsername(), 
 									GameServer.getDatabasePassword())) {
 								m.selectDatabase(GameServer.getDatabaseName());

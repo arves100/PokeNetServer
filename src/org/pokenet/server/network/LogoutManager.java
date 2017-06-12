@@ -52,7 +52,7 @@ public class LogoutManager implements Runnable {
 		UdpProtocolHandler.removePlayer(player);
 		GameServer.getInstance().updatePlayerCount();
 		m_database = new MySqlManager();
-		if(!m_database.connect(GameServer.getDatabaseHost(), GameServer.getDatabaseUsername(), GameServer.getDatabasePassword()))
+		if(!m_database.connect(GameServer.getDatabaseHost(), GameServer.getDatabasePort() ,GameServer.getDatabaseUsername(), GameServer.getDatabasePassword()))
 			return false;
 		m_database.selectDatabase(GameServer.getDatabaseName());
 		//Store all player information
