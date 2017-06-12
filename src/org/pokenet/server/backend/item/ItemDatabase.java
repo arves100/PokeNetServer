@@ -35,7 +35,7 @@ public class ItemDatabase {
 			doc.getDocumentElement().normalize();
 
 			NodeList itemsNodeList = doc.getElementsByTagName("itemDatabase");
-			for (int s = 0; s < itemsNodeList.getLength();) {
+			for (int s = 0; s < itemsNodeList.getLength();s++) {
 				Node itemNode = itemsNodeList.item(s);
 				if (itemNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element itemDBElement = (Element) itemNode;
@@ -104,9 +104,9 @@ public class ItemDatabase {
 						}
 					}
 				}
-				System.out.println("INFO: Successfully loaded items");
-				return;
 			}
+			System.out.println("INFO: Successfully loaded items");
+			return;
 		} catch (SAXParseException err) {
 			System.out.println("** Parsing error, line "
 					+ err.getLineNumber() + ", uri " + err.getSystemId());
