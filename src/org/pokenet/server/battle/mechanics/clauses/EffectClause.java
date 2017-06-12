@@ -9,23 +9,20 @@ import org.pokenet.server.battle.mechanics.statuses.StatusEffect;
  * 
  * @author Colin
  */
-@SuppressWarnings("unchecked")
 public abstract class EffectClause extends Clause {
 
-	private Class m_effect;
+	private Class<?> m_effect;
     
     /**
      * @param effect the status effect to restrict
      */
-    public EffectClause(String name, Class effect) {
+    public EffectClause(String name, Class<?> effect) {
         super(name);
         m_effect = effect;
     }
     
     public boolean equals(Object o2) {
         if (!(o2 instanceof EffectClause))
-            return false;
-        if (o2 == null)
             return false;
         return ((EffectClause)o2).m_effect.equals(m_effect);
     }

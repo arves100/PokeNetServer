@@ -30,8 +30,7 @@ import org.pokenet.server.battle.mechanics.statuses.items.HoldItem;
  */
 public abstract class Clause extends FieldEffect {
     
-    @SuppressWarnings("unchecked")
-	public static class ClauseChoice implements Serializable, Comparable {
+	public static class ClauseChoice implements Serializable, Comparable<ClauseChoice> {
         private static final long serialVersionUID = 1L;
         private String m_name, m_description;
         private boolean m_default, m_disablesSelection;
@@ -46,8 +45,8 @@ public abstract class Clause extends FieldEffect {
         public Clause getClause() {
             return m_clause;
         }
-        public int compareTo(Object o2) {
-            ClauseChoice c2 = (ClauseChoice)o2;
+        public int compareTo(ClauseChoice o2) {
+            ClauseChoice c2 = o2;
             return m_name.compareToIgnoreCase(c2.m_name);
         }
         public String getName() {
@@ -240,7 +239,6 @@ public abstract class Clause extends FieldEffect {
         
     }
     
-    @SuppressWarnings("unchecked")
 	private static void initialiseClauseChoices() {
         m_clauseChoices = new ClauseChoice[m_clauses.size()];
         int i = 0;

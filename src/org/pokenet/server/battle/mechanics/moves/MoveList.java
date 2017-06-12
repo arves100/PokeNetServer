@@ -3148,7 +3148,6 @@ public class MoveList {
 
 		m_moves.add(new MoveListEntry("Baton Pass",
 				new PokemonMove(PokemonType.T_NORMAL, 0, 1.0, 40) {
-			@SuppressWarnings("unchecked")
 			public int use(BattleMechanics mech, Pokemon user, Pokemon target) {
 				BattleField field = user.getField();
 				int party = user.getParty();
@@ -3157,7 +3156,7 @@ public class MoveList {
 					return 0;
 				}
 				List<StatusEffect> list = user.getNormalStatuses(0);
-				List applied = new ArrayList();
+				List<StatusEffect> applied = new ArrayList<StatusEffect>();
 				Iterator<StatusEffect>  i = list.iterator();
 				while (i.hasNext()) {
 					StatusEffect effect = (StatusEffect)i.next();
@@ -3168,7 +3167,7 @@ public class MoveList {
 							} else if (effect instanceof PerishSongEffect) {
 								applied.add(new PerishSongEffect(false));
 							} else {
-								applied.add(effect.clone());
+								applied.add((StatusEffect)effect.clone());
 							}
 							if (effect instanceof CoEffect) {
 								CoEffect coeffect = (CoEffect)effect;

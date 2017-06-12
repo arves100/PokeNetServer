@@ -146,8 +146,7 @@ public class PokemonMove implements Cloneable {
      * of the status effect is returned by this method. Otherwise, the method
      * returns null.
      */
-    @SuppressWarnings("unchecked")
-	public Class getStatusException() {
+	public Class<?> getStatusException() {
         return null;
     }
     

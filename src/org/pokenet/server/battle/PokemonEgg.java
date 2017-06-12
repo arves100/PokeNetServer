@@ -6,7 +6,6 @@ package org.pokenet.server.battle;
  * 
  */
 public class PokemonEgg extends Pokemon {
-	private static final long serialVersionUID = -3895787504332248433L;
 	private int m_timeRemaining;
 
 	/**

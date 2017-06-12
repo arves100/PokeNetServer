@@ -365,9 +365,8 @@ public abstract class BattleField {
 	  * Returns the first instance of an effect of a certain class that is
 	  * applied to the BattleField.
 	  */
-	 @SuppressWarnings("unchecked")
-	 public FieldEffect getEffectByType(Class type) {
-		 ArrayList list = getEffectsByType(type);
+	 public FieldEffect getEffectByType(Class<?> type) {
+		 ArrayList<FieldEffect> list = getEffectsByType(type);
 		 if (list.size() == 0) {
 			 return null;
 		 }
@@ -378,8 +377,7 @@ public abstract class BattleField {
 	  * Returns a list of the effects of a certain class that are applied to
 	  * this BattleField.
 	  */
-	 @SuppressWarnings("unchecked")
-	 public ArrayList<FieldEffect> getEffectsByType(Class type) {
+	 public ArrayList<FieldEffect> getEffectsByType(Class<?> type) {
 		 ArrayList<FieldEffect> ret = new ArrayList<FieldEffect>();
 		 Iterator<FieldEffect> i = m_effects.iterator();
 		 while (i.hasNext()) {
@@ -603,13 +601,12 @@ public abstract class BattleField {
 	 /**
 	  * Determine the order in which pokemon attack, etc.
 	  */
-	 @SuppressWarnings("unchecked")
 	 private void sortBySpeed(Pokemon[] active) {
 		 // Sort pokemon by speed.
 		 ArrayList<Pokemon> list = new ArrayList<Pokemon>(Arrays.asList(active));
-		 Collections.sort(list, new Comparator() {
-			 public int compare(Object o1, Object o2) {
-				 return PokemonWrapper.compareSpeed((Pokemon)o1, (Pokemon)o2);
+		 Collections.sort(list, new Comparator<Pokemon>() {
+			 public int compare(Pokemon o1, Pokemon o2) {
+				 return PokemonWrapper.compareSpeed(o1, o2);
 			 }
 		 });
 	 }
@@ -617,7 +614,6 @@ public abstract class BattleField {
 	 /**
 	  * Tick status effects at the end of a turn.
 	  */
-	 @SuppressWarnings("unchecked")
 	 private void tickStatuses(Pokemon[] active) {
 		 sortBySpeed(active);
 
@@ -633,8 +629,8 @@ public abstract class BattleField {
 				 Pokemon poke = active[j];
 				 if (poke.isFainted()) continue;
 
-				 List v = poke.getStatusesByTier(i);
-				 Iterator k = v.iterator();
+				 List<StatusEffect> v = poke.getStatusesByTier(i);
+				 Iterator<StatusEffect> k = v.iterator();
 				 while (k.hasNext()) {
 					 ((StatusEffect)k.next()).tick(poke);
 				 }
@@ -677,8 +673,7 @@ public abstract class BattleField {
 	  * A wrapper for a pokemon and a turn. Can be compared on the basis of
 	  * move priority, or, failing that, speed.
 	  */
-	 @SuppressWarnings("unchecked")
-	 protected static class PokemonWrapper implements Comparable {
+	 protected static class PokemonWrapper implements Comparable<PokemonWrapper> {
 		 private Pokemon m_poke;
 		 private BattleTurn m_turn;
 		 private int m_idx;
@@ -721,8 +716,8 @@ public abstract class BattleField {
 		 /**
 		  * Compare this object to another PokemonWrapper.
 		  */
-		 public int compareTo(Object obj) {
-			 PokemonWrapper comp = (PokemonWrapper)obj;
+		 public int compareTo(PokemonWrapper obj) {
+			 PokemonWrapper comp = obj;
 			 if ((comp == null) || (comp.m_turn == null))
 				 return -1;
 			 if (m_turn == null)

@@ -16,7 +16,6 @@ public class PokemonNature implements Serializable {
     
     private static final long serialVersionUID = -549059028197342801L;
     
-    @SuppressWarnings("unused")
 	@Element
     /*serializable*/ private int m_nature;
         

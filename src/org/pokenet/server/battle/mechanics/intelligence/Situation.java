@@ -51,7 +51,7 @@ public class Situation {
             File f = new File(m_file);
             FileInputStream file = new FileInputStream(f);
             ObjectInputStream obj = new ObjectInputStream(file);
-            m_memory = (ArrayList)obj.readObject();
+            m_memory = (ArrayList<Memory>)obj.readObject();
             obj.close();
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -132,11 +132,10 @@ public class Situation {
     /**
      * Find the best move to use for the situation.
      */
-    @SuppressWarnings("unchecked")
 	public synchronized String getBestMemory(final Memory target, String[] moves) {
-        Comparator comp = new Comparator() {
-                public int compare(Object o1, Object o2) {
-                    Memory a = (Memory)o1, b = (Memory)o2;
+        Comparator<Memory> comp = new Comparator<Memory>() {
+                public int compare(Memory o1, Memory o2) {
+                    Memory a = o1, b = o2;
                     int scoreA = getMemoryScore(target, a);
                     int scoreB = getMemoryScore(target, b);
                     if (scoreA < scoreB) {
@@ -148,8 +147,8 @@ public class Situation {
                 }
             };
             
-        TreeSet items = new TreeSet(comp);
-        Iterator i = m_memory.iterator();
+        TreeSet<Memory> items = new TreeSet<Memory>(comp);
+        Iterator<Memory> i = m_memory.iterator();
         while (i.hasNext()) {
             Memory mem = (Memory)i.next();
             if (!isInMoveList(mem.m_move, moves)) {
@@ -180,7 +179,7 @@ public class Situation {
         int start = m_random.nextInt(2) * half;
         int idx = start + m_random.nextInt(half);
         
-        Iterator j = items.iterator();
+        Iterator<Memory> j = items.iterator();
         int k = 0;
         while (j.hasNext()) {
             if (k++ == idx) {

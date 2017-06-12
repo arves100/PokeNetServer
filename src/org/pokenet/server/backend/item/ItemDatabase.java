@@ -35,7 +35,7 @@ public class ItemDatabase {
 			doc.getDocumentElement().normalize();
 
 			NodeList itemsNodeList = doc.getElementsByTagName("itemDatabase");
-			for (int s = 0; s < itemsNodeList.getLength(); s++) {
+			for (int s = 0; s < itemsNodeList.getLength();) {
 				Node itemNode = itemsNodeList.item(s);
 				if (itemNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element itemDBElement = (Element) itemNode;

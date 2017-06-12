@@ -68,7 +68,7 @@ public class HoldItemData {
             return m_items;
         }
         SortedSet<Object> items = (SortedSet<Object>)m_items.clone();
-        items.addAll((Collection)o);
+        items.addAll((Collection<Object>)o);
         return items;
     }
     
@@ -90,8 +90,8 @@ public class HoldItemData {
 	public void loadItemData(InputStream input) throws IOException, FileNotFoundException {
         ObjectInputStream stream = new ObjectInputStream(input);
         try {
-            m_items = (TreeSet)stream.readObject();
-            m_exclusives = (HashMap)stream.readObject();
+            m_items = (TreeSet<Object>)stream.readObject();
+            m_exclusives = (HashMap<String, HashSet<String>>)stream.readObject();
         } catch (ClassNotFoundException e) {
             
         }
@@ -100,14 +100,13 @@ public class HoldItemData {
     /**
      *  Remove an exclusive item from a pokemon.
      */
-    @SuppressWarnings("unchecked")
 	public void removeExclusiveItem(String name, String pokemon) {
         Object o = m_exclusives.get(pokemon);
         if (o == null) {
             return;
         }
 
-        ((HashSet)o).remove(name);
+        ((HashSet<?>)o).remove(name);
     }
     
     /**

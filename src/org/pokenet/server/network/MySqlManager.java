@@ -7,6 +7,7 @@ package org.pokenet.server.network;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
@@ -34,9 +35,9 @@ public class MySqlManager {
             	return true;
             else
             	return false;
-        } catch( Exception x ) {
-          x.printStackTrace();
-          return false;
+        } catch ( SQLException x ) {
+        	System.out.println("SQLException: " + x.getMessage() + "(State: " + x.getSQLState() + ")");
+        	return false;
         }
     }
     

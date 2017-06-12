@@ -408,6 +408,7 @@ public class PlayerChar extends Char implements Battleable, Tradeable {
 					 */
 					if(this.getMap().getPvPType() != null) {
 						switch(this.getMap().getPvPType()) {
+						default: // Default is disabled -_-
 						case DISABLED:
 							/* Some maps have pvp disabled */
 							otherPlayer.getTcpSession().write("r!2");
@@ -419,7 +420,7 @@ public class PlayerChar extends Char implements Battleable, Tradeable {
 							otherPlayer.ensureHealthyPokemon();
 							m_battleField = new PvPBattleField(
 									DataService.getBattleMechanics(),this, otherPlayer);
-							return;
+							return;								
 						}
 					} else {
 						m_battleField = new PvPBattleField(

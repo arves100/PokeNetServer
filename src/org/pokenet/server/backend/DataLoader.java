@@ -147,6 +147,7 @@ public class DataLoader implements Runnable {
 					m_map.addChar(t);
 				}
 			}
+			reader.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("Error in " + m_map.getX() + "." + m_map.getY() + ".txt - Invalid NPC, " +
