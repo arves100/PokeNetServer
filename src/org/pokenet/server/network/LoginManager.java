@@ -29,7 +29,6 @@ public class LoginManager implements Runnable {
 	private Queue<Object []> m_loginQueue;
 	private Thread m_thread;
 	private boolean m_isRunning;
-	private MySqlManager m_database;
 	
 	private Queue<Object []> m_passChangeQueue;
 	
@@ -39,7 +38,6 @@ public class LoginManager implements Runnable {
 	 * @param manager
 	 */
 	public LoginManager(LogoutManager manager) {
-		m_database = new MySqlManager();
 		m_loginQueue = new LinkedList<Object []>();
 		m_passChangeQueue = new LinkedList<Object []>();
 		m_thread = null;
@@ -75,26 +73,15 @@ public class LoginManager implements Runnable {
 				session.write("l2");
 				return;
 			}
-			//First connect to the database
-			m_database = new MySqlManager();
-			if(!m_database.connect(GameServer.getDatabaseHost(), GameServer.getDatabasePort(), GameServer.getDatabaseUsername(), GameServer.getDatabasePassword())) {
-				session.write("l1");
-				return;
-			}
-			//Select the database
-			if(!m_database.selectDatabase(GameServer.getDatabaseName())) {
-				session.write("l1");
-				return;
-			}
 			//Now, check they are not banned
-			ResultSet result = m_database.query("SELECT * FROM pn_bans WHERE ip='" + getIp(session) + "'");
+			ResultSet result = MySqlInstance.query("SELECT * FROM pn_bans WHERE ip='" + getIp(session) + "'");
 			if(result != null && result.first()) {
 				//This is player is banned, inform them
 				session.write("l4");
 				return;
 			}
 			//Then find the member's information
-			result = m_database.query("SELECT * FROM pn_members WHERE username='" + MySqlManager.parseSQL(username) + "'");
+			result = MySqlInstance.query("SELECT * FROM pn_members WHERE username='" + MySqlManager.parseSQL(username) + "'");
 			if(!result.first()){
 				//Member doesn't exist, say user or pass wrong. We don't want someone to guess usernames. 
 				session.write("le");
@@ -118,9 +105,9 @@ public class LoginManager implements Runnable {
 						p.getTcpSession().close(true);
 						p.setTcpSession(session);
 						p.setLanguage(Language.values()[Integer.parseInt(String.valueOf(l))]);
-						m_database.query("UPDATE pn_members SET lastLoginServer='" + MySqlManager.parseSQL(GameServer.getServerName()) + "', lastLoginTime='" + time + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
-						m_database.query("UPDATE pn_members SET lastLoginIP='" + getIp(session) + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
-						m_database.query("UPDATE pn_members SET lastLanguageUsed='" + l + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
+						MySqlInstance.query("UPDATE pn_members SET lastLoginServer='" + MySqlManager.parseSQL(GameServer.getServerName()) + "', lastLoginTime='" + time + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
+						MySqlInstance.query("UPDATE pn_members SET lastLoginIP='" + getIp(session) + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
+						MySqlInstance.query("UPDATE pn_members SET lastLanguageUsed='" + l + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
 						session.setAttribute("player", p);
 						this.initialiseClient(p, session);
 					} else {
@@ -166,15 +153,14 @@ public class LoginManager implements Runnable {
 				session.write("le");
 				return;
 			}
-			m_database.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			session.write("lu");
 			/*
 			 * Something went wrong so make sure the player is registered as logged out
 			 */
-			m_database.query("UPDATE pn_members SET lastLoginServer='null' WHERE username='" + MySqlManager.parseSQL(username) + "'");
-			m_database.close();
+			MySqlInstance.query("UPDATE pn_members SET lastLoginServer='null' WHERE username='" + MySqlManager.parseSQL(username) + "'");
+			MySqlInstance.close();
 		}
 	}
 	
@@ -282,27 +268,20 @@ public class LoginManager implements Runnable {
 	 * @param session
 	 */
 	private void changePass(String username, String newPassword, String oldPassword, IoSession session) {
-		m_database = new MySqlManager();
-	
-		if(m_database.connect(GameServer.getDatabaseHost(),GameServer.getDatabasePort(), GameServer.getDatabaseUsername(), GameServer.getDatabasePassword())) {
-			if(m_database.selectDatabase(GameServer.getDatabaseName())) {
-				ResultSet result = m_database.query("SELECT * FROM pn_members WHERE username='" + MySqlManager.parseSQL(username) + "'");
-				try {
-					if(result.first()){
-						// if we got a result, compare their old password to the one we have stored for them
-						if(result.getString("password").compareTo(oldPassword) == 0) {
-							// old password matches the one on file, therefore they got their old password correct, so it can be changed to their new one
-							m_database.query("UPDATE pn_members SET password='" + MySqlManager.parseSQL(newPassword) + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
-							// tell them their password was changed successfully
-							session.write("ps");
-							return;
-						}
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
+		ResultSet result = MySqlInstance.query("SELECT * FROM pn_members WHERE username='" + MySqlManager.parseSQL(username) + "'");
+		try {
+			if(result.first()){
+				// if we got a result, compare their old password to the one we have stored for them
+				if(result.getString("password").compareTo(oldPassword) == 0) {
+					// old password matches the one on file, therefore they got their old password correct, so it can be changed to their new one
+					MySqlInstance.query("UPDATE pn_members SET password='" + MySqlManager.parseSQL(newPassword) + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
+					// tell them their password was changed successfully
+					session.write("ps");
+					return;
 				}
-				m_database.close();
 			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		// tell them we failed to change their password
 		session.write("pe");
@@ -328,9 +307,9 @@ public class LoginManager implements Runnable {
 		/*
 		 * Update the database with login information
 		 */
-		m_database.query("UPDATE pn_members SET lastLoginServer='" + MySqlManager.parseSQL(GameServer.getServerName()) + "', lastLoginTime='" + time + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
-		m_database.query("UPDATE pn_members SET lastLoginIP='" + getIp(session) + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
-		m_database.query("UPDATE pn_members SET lastLanguageUsed='" + language + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
+		MySqlInstance.query("UPDATE pn_members SET lastLoginServer='" + MySqlManager.parseSQL(GameServer.getServerName()) + "', lastLoginTime='" + time + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
+		MySqlInstance.query("UPDATE pn_members SET lastLoginIP='" + getIp(session) + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
+		MySqlInstance.query("UPDATE pn_members SET lastLanguageUsed='" + language + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
 		session.setAttribute("player", p);
 		/*
 		 * Send success packet to player, set their map and add them to a movement service
@@ -403,10 +382,10 @@ public class LoginManager implements Runnable {
 			p.setBreedingExp(result.getInt("skBreed"));
 			//Retrieve refences to all Pokemon
 			int partyId = result.getInt("party");
-			ResultSet partyData = m_database.query("SELECT * FROM pn_party WHERE id='" + partyId + "'");
+			ResultSet partyData = MySqlInstance.query("SELECT * FROM pn_party WHERE id='" + partyId + "'");
 			partyData.first();
 			
-			ResultSet pokemons = m_database.query("SELECT * FROM pn_pokemon WHERE currentTrainerName='" + p.getName() + "'");
+			ResultSet pokemons = MySqlInstance.query("SELECT * FROM pn_pokemon WHERE currentTrainerName='" + p.getName() + "'");
 			int boxNumber = 0;
 			int boxPosition = 0;
 			/* Loop through all Pokemon belonging to this player and add them to their party/box */
@@ -452,7 +431,7 @@ public class LoginManager implements Runnable {
 			p.setBoxes(boxes);
 			
 			//Attach bag
-			p.setBag(getBagObject(m_database.query("SELECT * FROM pn_bag WHERE member='" + result.getInt("id") + "'"),p.getId()));
+			p.setBag(getBagObject(MySqlInstance.query("SELECT * FROM pn_bag WHERE member='" + result.getInt("id") + "'"),p.getId()));
 
 			//Attach badges
 			p.generateBadges(result.getString("badges"));

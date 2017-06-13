@@ -21,13 +21,11 @@ public class LogoutManager implements Runnable {
 	private Queue<PlayerChar> m_logoutQueue;
 	private Thread m_thread;
 	private boolean m_isRunning;
-	private MySqlManager m_database;
 	
 	/**
 	 * Default constructor
 	 */
 	public LogoutManager() {
-		m_database = new MySqlManager();
 		m_logoutQueue = new LinkedList<PlayerChar>();
 		m_thread = null;
 	}
@@ -51,18 +49,12 @@ public class LogoutManager implements Runnable {
 		TcpProtocolHandler.removePlayer(player);
 		UdpProtocolHandler.removePlayer(player);
 		GameServer.getInstance().updatePlayerCount();
-		m_database = new MySqlManager();
-		if(!m_database.connect(GameServer.getDatabaseHost(), GameServer.getDatabasePort() ,GameServer.getDatabaseUsername(), GameServer.getDatabasePassword()))
-			return false;
-		m_database.selectDatabase(GameServer.getDatabaseName());
 		//Store all player information
 		if(!savePlayer(player)) {
-			m_database.close();
 			return false;
 		}
 		//Finally, store that the player is logged out and close connection
-		m_database.query("UPDATE pn_members SET lastLoginServer='null' WHERE id='" + player.getId() + "'");
-		m_database.close();
+		MySqlInstance.query("UPDATE pn_members SET lastLoginServer='null' WHERE id='" + player.getId() + "'");
 		GameServer.getServiceManager().getMovementService().removePlayer(player.getName());
 		return true;
 	}
@@ -137,7 +129,7 @@ public class LogoutManager implements Runnable {
 			 * First, check if they have logged in somewhere else.
 			 * This is useful for when as server loses its internet connection
 			 */
-			ResultSet data = m_database.query("SELECT * FROM pn_members WHERE id='" + p.getId() +  "'");
+			ResultSet data = MySqlInstance.query("SELECT * FROM pn_members WHERE id='" + p.getId() +  "'");
 			data.first();
 			if(data.getLong("lastLoginTime") == p.getLastLoginTime()) {
 				/* Check they are not trading */
@@ -156,7 +148,7 @@ public class LogoutManager implements Runnable {
 					else
 						badges = badges + "0";
 				}
-				m_database.query("UPDATE pn_members SET " +
+				MySqlInstance.query("UPDATE pn_members SET " +
 						"muted='" + p.isMuted() + "', " +
 						"sprite='" + p.getRawSprite() + "', " +
 						"money='" + p.getMoney() + "', " +
@@ -185,7 +177,7 @@ public class LogoutManager implements Runnable {
 					if(p.getParty() != null && p.getParty()[i] != null) {
 						if(p.getParty()[i].getDatabaseID() < 1) {
 							//This is a new Pokemon, add it to the database
-							if(saveNewPokemon(p.getParty()[i], p.getName(), m_database) < 1)
+							if(saveNewPokemon(p.getParty()[i], p.getName()) < 1)
 								return false;
 						} else {
 							//Old Pokemon, just update
@@ -196,7 +188,7 @@ public class LogoutManager implements Runnable {
 				}
 				//Save all the Pokemon id's in the player's party
 				if(p.getParty() != null) {
-					m_database.query("UPDATE pn_party SET " +
+					MySqlInstance.query("UPDATE pn_party SET " +
 							"pokemon0='" + (p.getParty()[0] != null ? p.getParty()[0].getDatabaseID() : -1) + "', " +
 							"pokemon1='" + (p.getParty()[1] != null ? p.getParty()[1].getDatabaseID() : -1) + "', " +
 							"pokemon2='" + (p.getParty()[2] != null ? p.getParty()[2].getDatabaseID() : -1) + "', " +
@@ -222,7 +214,7 @@ public class LogoutManager implements Runnable {
 								if(p.getBoxes()[i].getPokemon()[j] != null) {
 									if(p.getBoxes()[i].getPokemon()[j].getDatabaseID() < 1) {
 										/* This is a new Pokemon, create it in the database */
-										if(saveNewPokemon(p.getBoxes()[i].getPokemon(j), p.getName(), m_database) < 1)
+										if(saveNewPokemon(p.getBoxes()[i].getPokemon(j), p.getName()) < 1)
 											return false;
 									} else {
 										/* Update an existing pokemon */
@@ -251,7 +243,7 @@ public class LogoutManager implements Runnable {
 	 * Saves a pokemon to the database that didn't exist in it before
 	 * @param p
 	 */
-	private int saveNewPokemon(Pokemon p, String currentTrainer, MySqlManager db) {
+	private int saveNewPokemon(Pokemon p, String currentTrainer) {
 		try {
 			/*
 			 * Due to issues with Pokemon not receiving abilities,
@@ -270,7 +262,7 @@ public class LogoutManager implements Runnable {
 			/*
 			 * Insert the Pokemon into the database
 			 */
-			db.query("INSERT INTO pn_pokemon" +
+			MySqlInstance.query("INSERT INTO pn_pokemon" +
 					"(name, speciesName, exp, baseExp, expType, isFainted, level, happiness, " +
 					"gender, nature, abilityName, itemName, isShiny, currentTrainerName, originalTrainerName, date, contestStats)" +
 					"VALUES (" +
@@ -295,12 +287,12 @@ public class LogoutManager implements Runnable {
 			 * Get the pokemon's database id and attach it to the pokemon.
 			 * This needs to be done so it can be attached to the player in the database later.
 			 */
-			ResultSet result = db.query("SELECT * FROM pn_pokemon WHERE originalTrainerName='"  + MySqlManager.parseSQL(p.getOriginalTrainer()) + 
+			ResultSet result = MySqlInstance.query("SELECT * FROM pn_pokemon WHERE originalTrainerName='"  + MySqlManager.parseSQL(p.getOriginalTrainer()) + 
 					"' AND date='" + MySqlManager.parseSQL(p.getDateCaught()) + "' AND name='" + p.getSpeciesName() + "' AND exp='" + 
 					String.valueOf(p.getExp()) + "'");
 			result.first();
 			p.setDatabaseID(result.getInt("id"));
-			db.query("UPDATE pn_pokemon SET move0='" + MySqlManager.parseSQL(p.getMove(0).getName()) +
+			MySqlInstance.query("UPDATE pn_pokemon SET move0='" + MySqlManager.parseSQL(p.getMove(0).getName()) +
 					"', move1='" + (p.getMove(1) == null ? "null" : MySqlManager.parseSQL(p.getMove(1).getName())) +
 					"', move2='" + (p.getMove(2) == null ? "null" : MySqlManager.parseSQL(p.getMove(2).getName())) +
 					"', move3='" + (p.getMove(3) == null ? "null" : MySqlManager.parseSQL(p.getMove(3).getName())) +
@@ -317,7 +309,7 @@ public class LogoutManager implements Runnable {
 					"', evSPATK='" + p.getEv(4) +
 					"', evSPDEF='" + p.getEv(5) +
 					"' WHERE id='" + p.getDatabaseID() + "'");
-			db.query("UPDATE pn_pokemon SET ivHP='" + p.getIv(0) +
+			MySqlInstance.query("UPDATE pn_pokemon SET ivHP='" + p.getIv(0) +
 					"', ivATK='" + p.getIv(1) +
 					"', ivDEF='" + p.getIv(2) +
 					"', ivSPD='" + p.getIv(3) +
@@ -352,7 +344,7 @@ public class LogoutManager implements Runnable {
 			/*
 			 * Update the pokemon in the database
 			 */
-			m_database.query("UPDATE pn_pokemon SET " +
+			MySqlInstance.query("UPDATE pn_pokemon SET " +
 					"name='" + MySqlManager.parseSQL(p.getName()) +"', " +
 					"speciesName='" + MySqlManager.parseSQL(p.getSpeciesName()) +"', " +
 					"exp='" + String.valueOf(p.getExp()) +"', " +
@@ -365,7 +357,7 @@ public class LogoutManager implements Runnable {
 					"currentTrainerName='" + currentTrainer +"', " +
 					"contestStats='" + p.getContestStatsAsString() +"' " +
 					"WHERE id='" + p.getDatabaseID() + "'");
-try {			m_database.query("UPDATE pn_pokemon SET move0='" + (p.getMove(0) == null ? "null" : MySqlManager.parseSQL(p.getMove(0).getName())) +
+try {			MySqlInstance.query("UPDATE pn_pokemon SET move0='" + (p.getMove(0) == null ? "null" : MySqlManager.parseSQL(p.getMove(0).getName())) +
 					"', move1='" + (p.getMove(1) == null ? "null" : MySqlManager.parseSQL(p.getMove(1).getName())) +
 					"', move2='" + (p.getMove(2) == null ? "null" : MySqlManager.parseSQL(p.getMove(2).getName())) +
 					"', move3='" + (p.getMove(3) == null ? "null" : MySqlManager.parseSQL(p.getMove(3).getName())) +
@@ -385,7 +377,6 @@ try {			m_database.query("UPDATE pn_pokemon SET move0='" + (p.getMove(0) == null
 }
 catch (NullPointerException e) {
 	e.printStackTrace();
-	System.out.println("Database is " + m_database);
 	System.out.println("Pokemon object is " + p);
 	System.out.println("Database ID is " + p.getDatabaseID());
 		System.out.println("Pokemon name is " + p.getName());
@@ -403,7 +394,7 @@ catch (NullPointerException e) {
 					"', evSPATK='" + p.getEv(4) +
 					"', evSPDEF='" + p.getEv(5));
 }
-			m_database.query("UPDATE pn_pokemon SET ivHP='" + p.getIv(0) +
+MySqlInstance.query("UPDATE pn_pokemon SET ivHP='" + p.getIv(0) +
 					"', ivATK='" + p.getIv(1) +
 					"', ivDEF='" + p.getIv(2) +
 					"', ivSPD='" + p.getIv(3) +
@@ -437,13 +428,13 @@ catch (NullPointerException e) {
 	private boolean saveBag(Bag b) {
 		try {
 			//Destroy item data to prevent dupes. 
-			m_database.query("DELETE FROM pn_bag WHERE member='" + b.getMemberId() + "'");
+			MySqlInstance.query("DELETE FROM pn_bag WHERE member='" + b.getMemberId() + "'");
 			for(int i = 0; i < b.getItems().size(); i++) {
 				if(b.getItems().get(i) != null) {
 					/*
 					 * NOTE: Items are stored as values 1 - 999
 					 */
-					m_database.query("INSERT INTO pn_bag (member,item,quantity) VALUES ('" +
+					MySqlInstance.query("INSERT INTO pn_bag (member,item,quantity) VALUES ('" +
 							b.getMemberId()+"', '" + 
 							b.getItems().get(i).getItemNumber()+"', '"+
 							b.getItems().get(i).getQuantity()+"')");

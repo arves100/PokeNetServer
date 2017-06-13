@@ -82,20 +82,13 @@ public class NetworkService {
 		 * Ensure anyone still marked as logged in on this server
 		 * is unmarked
 		 */
-		MySqlManager m = new MySqlManager();
-		if(m.connect(GameServer.getDatabaseHost(), 
-				GameServer.getDatabasePort(),
-				GameServer.getDatabaseUsername(),
-				GameServer.getDatabasePassword())) {
-			m.selectDatabase(GameServer.getDatabaseName());
-			m.query("UPDATE pn_members SET lastLoginServer='null' WHERE lastLoginServer='"
+		if(MySqlInstance.connect()) {
+			MySqlInstance.query("UPDATE pn_members SET lastLoginServer='null' WHERE lastLoginServer='"
 					+ GameServer.getServerName() + "'");
-			m.close();
 		} else {
 			System.out.println("ERROR: Cannot connect to MySQL Server");
 			return false;
 		}
-		m = null;
 		/*
 		 * Start the login/logout managers
 		 */

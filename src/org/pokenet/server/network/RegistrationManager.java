@@ -9,7 +9,6 @@ import java.util.Queue;
 import java.util.Random;
 
 import org.apache.mina.core.session.IoSession;
-import org.pokenet.server.GameServer;
 import org.pokenet.server.battle.DataService;
 import org.pokenet.server.battle.Pokemon;
 import org.pokenet.server.battle.PokemonSpecies;
@@ -25,13 +24,11 @@ public class RegistrationManager implements Runnable {
 	private Queue<IoSession> m_queue;
 	private Thread m_thread;
 	private boolean m_isRunning;
-	private MySqlManager m_database;
 	
 	/**
 	 * Constructor
 	 */
 	public RegistrationManager() {
-		m_database = new MySqlManager();
 		m_thread = null;
 		m_queue = new LinkedList<IoSession>();
 	}
@@ -60,6 +57,13 @@ public class RegistrationManager implements Runnable {
 		if(!session.isConnected() || session.isClosing()) {
 			return;
 		}
+		if (!MySqlInstance.isConnected()) {
+			session.resumeRead();
+			session.resumeWrite();
+			session.write("r1");
+			return;
+		}
+			
 		int region = Integer.parseInt(String.valueOf
 				(((String) session.getAttribute("reg")).charAt(0)));
 		String [] info = ((String) session.getAttribute("reg")).substring(1).split(",");
@@ -78,14 +82,11 @@ public class RegistrationManager implements Runnable {
 			session.write("r4");
 			return;
 		}
-		m_database = new MySqlManager();
-		if(m_database.connect(GameServer.getDatabaseHost(), GameServer.getDatabasePort(), GameServer.getDatabaseUsername(), GameServer.getDatabasePassword())) {
-			m_database.selectDatabase(GameServer.getDatabaseName());
 			int s = Integer.parseInt(info[4]);
 			/*
 			 * Check if the user exists
 			 */
-			ResultSet data = m_database.query("SELECT * FROM pn_members WHERE username='" + MySqlManager.parseSQL(info[0]) + "'");
+			ResultSet data = MySqlInstance.query("SELECT * FROM pn_members WHERE username='" + MySqlManager.parseSQL(info[0]) + "'");
 			data.first();
 			try {				
 				if(data != null && data.getString("username") != null && data.getString("username").equalsIgnoreCase(MySqlManager.parseSQL(info[0]))) {
@@ -98,7 +99,7 @@ public class RegistrationManager implements Runnable {
 			/*
 			 * Check if an account is already registered with the email
 			 */
-			data = m_database.query("SELECT * FROM pn_members WHERE email='" + MySqlManager.parseSQL(info[2]) + "'");
+			data = MySqlInstance.query("SELECT * FROM pn_members WHERE email='" + MySqlManager.parseSQL(info[2]) + "'");
 			data.first();
 			try {				
 				if(data != null && data.getString("email") != null && data.getString("email").equalsIgnoreCase(MySqlManager.parseSQL(info[2]))) {
@@ -161,7 +162,7 @@ public class RegistrationManager implements Runnable {
 			/*
 			 * Insert player into database
 			 */
-			m_database.query("INSERT INTO pn_members (username, password, dob, email, lastLoginTime, lastLoginServer, " +
+			MySqlInstance.query("INSERT INTO pn_members (username, password, dob, email, lastLoginTime, lastLoginServer, " +
 					"sprite, money, skHerb, skCraft, skFish, skTrain, skCoord, skBreed, " +
 					"x, y, mapX, mapY, badges, healX, healY, healMapX, healMapY, isSurfing, adminLevel, muted) VALUE " +
 					"('" + MySqlManager.parseSQL(info[0]) + "', '" + MySqlManager.parseSQL(info[1]) + "', '" + MySqlManager.parseSQL(info[3]) + "', '" + MySqlManager.parseSQL(info[2]) + "', " +
@@ -172,7 +173,7 @@ public class RegistrationManager implements Runnable {
 			/*
 			 * Retrieve the player's unique id
 			 */
-			data = m_database.query("SELECT * FROM pn_members WHERE username='" + MySqlManager.parseSQL(info[0]) + "'");
+			data = MySqlInstance.query("SELECT * FROM pn_members WHERE username='" + MySqlManager.parseSQL(info[0]) + "'");
 			data.first();
 			int playerId = data.getInt("id");
 			//Player's bag is now created "on the fly" as soon as player gets his first item. 
@@ -182,31 +183,28 @@ public class RegistrationManager implements Runnable {
 			Pokemon p = this.createStarter(s);
 			p.setOriginalTrainer(info[0]);
 			p.setDateCaught(new SimpleDateFormat("yyyy-MM-dd:HH-mm-ss").format(new Date()));
-			this.saveNewPokemon(p, m_database);
+			this.saveNewPokemon(p);
 			
-			m_database.query("INSERT INTO pn_party (member, pokemon0, pokemon1, pokemon2, pokemon3, pokemon4, pokemon5) VALUES ('" +
+			MySqlInstance.query("INSERT INTO pn_party (member, pokemon0, pokemon1, pokemon2, pokemon3, pokemon4, pokemon5) VALUES ('" +
 					+ playerId + "','" + p.getDatabaseID() + "','-1','-1','-1','-1','-1')");
-			data = m_database.query("SELECT * FROM pn_party WHERE member='" + playerId + "'");
+			data = MySqlInstance.query("SELECT * FROM pn_party WHERE member='" + playerId + "'");
 			data.first();
 			/*
 			 * Attach pokemon to the player
 			 */
-			m_database.query("UPDATE pn_members SET party='" + data.getInt("id") + "' WHERE id='" + playerId + "'");
+			MySqlInstance.query("UPDATE pn_members SET party='" + data.getInt("id") + "' WHERE id='" + playerId + "'");
 			/* Attach a bag of 5 pokeballs to the player */
-			m_database.query("INSERT INTO pn_bag (member,item,quantity) VALUES ('" + playerId + "', '35', '5')");
+			MySqlInstance.query("INSERT INTO pn_bag (member,item,quantity) VALUES ('" + playerId + "', '35', '5')");
 			/*
 			 * Finish
 			 */
-			m_database.close();
 			
 			session.resumeRead();
 			session.resumeWrite();
 			session.write("rs");
-		} else {
-			session.resumeRead();
-			session.resumeWrite();
-			session.write("r1");
-		}
+/*		} else {
+
+		}*/
 	}
 
 	/**
@@ -256,12 +254,12 @@ public class RegistrationManager implements Runnable {
 	 * Saves a pokemon to the database that didn't exist in it before
 	 * @param p
 	 */
-	private boolean saveNewPokemon(Pokemon p, MySqlManager db) {
+	private boolean saveNewPokemon(Pokemon p) {
 		try {
 			/*
 			 * Insert the Pokemon into the database
 			 */
-			db.query("INSERT INTO pn_pokemon" +
+			MySqlInstance.query("INSERT INTO pn_pokemon" +
 					"(name, speciesName, exp, baseExp, expType, isFainted, level, happiness, " +
 					"gender, nature, abilityName, itemName, isShiny, currentTrainerName, originalTrainerName, date, contestStats)" +
 					"VALUES (" +
@@ -286,11 +284,11 @@ public class RegistrationManager implements Runnable {
 			 * Get the pokemon's database id and attach it to the pokemon.
 			 * This needs to be done so it can be attached to the player in the database later.
 			 */
-			ResultSet result = db.query("SELECT * FROM pn_pokemon WHERE originalTrainerName='"  + MySqlManager.parseSQL(p.getOriginalTrainer()) + 
+			ResultSet result = MySqlInstance.query("SELECT * FROM pn_pokemon WHERE originalTrainerName='"  + MySqlManager.parseSQL(p.getOriginalTrainer()) + 
 					"' AND date='" + MySqlManager.parseSQL(p.getDateCaught()) + "'");
 			result.first();
 			p.setDatabaseID(result.getInt("id"));
-			db.query("UPDATE pn_pokemon SET move0='" + MySqlManager.parseSQL(p.getMove(0).getName()) +
+			MySqlInstance.query("UPDATE pn_pokemon SET move0='" + MySqlManager.parseSQL(p.getMove(0).getName()) +
 					"', move1='" + (p.getMove(1) == null ? "null" : MySqlManager.parseSQL(p.getMove(1).getName())) +
 					"', move2='" + (p.getMove(2) == null ? "null" : MySqlManager.parseSQL(p.getMove(2).getName())) +
 					"', move3='" + (p.getMove(3) == null ? "null" : MySqlManager.parseSQL(p.getMove(3).getName())) +
@@ -307,7 +305,7 @@ public class RegistrationManager implements Runnable {
 					"', evSPATK='" + p.getEv(4) +
 					"', evSPDEF='" + p.getEv(5) +
 					"' WHERE id='" + p.getDatabaseID() + "'");
-			db.query("UPDATE pn_pokemon SET ivHP='" + p.getIv(0) +
+			MySqlInstance.query("UPDATE pn_pokemon SET ivHP='" + p.getIv(0) +
 					"', ivATK='" + p.getIv(1) +
 					"', ivDEF='" + p.getIv(2) +
 					"', ivSPD='" + p.getIv(3) +

@@ -18,6 +18,26 @@ public class MySqlManager {
     private Connection mysql_connection;
     private ResultSet mysql_result;    
     private String mysql_connectionURL;
+    private boolean DriverLoaded = false;
+    
+    /**
+     * Loads the MySQL JDBC Driver
+     * @return
+     */
+    private boolean loadDriver() {
+    	if (DriverLoaded)
+    		return true;
+    	
+		// Load the MySQL JDBC Drver
+        try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}		
+        DriverLoaded = true;
+        return true;
+    }
     
     /**
      * Connects to the server. Returns true on success.
@@ -29,13 +49,9 @@ public class MySqlManager {
      */
     public boolean connect(String server, String port, String username, String password) {
 		System.out.println("INFO: Connecting to MySQL Server...");
-		// Load the MySQL JDBC Drver
-        try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (!loadDriver())
 			return false;
-		}		
+		
         try {
             //Open Connection
             mysql_connectionURL = "jdbc:mysql://" + server+":" + port;

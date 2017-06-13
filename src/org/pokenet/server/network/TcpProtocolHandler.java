@@ -309,32 +309,16 @@ public class TcpProtocolHandler extends IoHandlerAdapter {
 							//Ban player
 							if(m_players.containsKey(message.substring(2))) {
 								PlayerChar o = m_players.get(message.substring(2));
-								MySqlManager m = new MySqlManager();
-								if(m.connect(GameServer.getDatabaseHost(), 
-										GameServer.getDatabasePort(),
-										GameServer.getDatabaseUsername(), 
-										GameServer.getDatabasePassword())) {
-									m.selectDatabase(GameServer.getDatabaseName());
-									m.query("INSERT INTO pn_bans (ip) VALUE ('" + 
+								MySqlInstance.query("INSERT INTO pn_bans (ip) VALUE ('" + 
 											o.getIpAddress()
 											+ "')");
-									m.close();
-								}
 							}
 							break;
 						case 'B':
 							//Unban ip
-							MySqlManager m = new MySqlManager();
-							if(m.connect(GameServer.getDatabaseHost(), 
-									GameServer.getDatabasePort(),
-									GameServer.getDatabaseUsername(), 
-									GameServer.getDatabasePassword())) {
-								m.selectDatabase(GameServer.getDatabaseName());
-								m.query("DELETE FROM pn_bans WHERE ip='" + 
+							MySqlInstance.query("DELETE FROM pn_bans WHERE ip='" + 
 										message.substring(2)
 										+ "'");
-								m.close();
-							}
 							break;
 						case 'W':
 							//Warp to player
