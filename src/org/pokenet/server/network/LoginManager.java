@@ -217,7 +217,7 @@ public class LoginManager implements Runnable {
 						this.attemptLogin(session, l, username, password);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					e.printStackTrace(System.out);
 				}
 			}
 			try {
@@ -235,7 +235,7 @@ public class LoginManager implements Runnable {
 						this.changePass(username, newPassword, password, session);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					e.printStackTrace(System.out);
 				}
 			}
 			try {
@@ -284,7 +284,7 @@ public class LoginManager implements Runnable {
 				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		}
 		// tell them we failed to change their password
 		session.write("pe");
@@ -311,10 +311,11 @@ public class LoginManager implements Runnable {
 		 * Update the database with login information
 		 */
 		try {
-		MySqlInstance.query("UPDATE pn_members SET lastLoginServer='" + MySqlManager.parseSQL(GameServer.getServerName()) + "', lastLoginTime='" + time + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
-		MySqlInstance.query("UPDATE pn_members SET lastLoginIP='" + getIp(session) + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
-		MySqlInstance.query("UPDATE pn_members SET lastLanguageUsed='" + language + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
+			MySqlInstance.query("UPDATE pn_members SET lastLoginServer='" + MySqlManager.parseSQL(GameServer.getServerName()) + "', lastLoginTime='" + time + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
+			MySqlInstance.query("UPDATE pn_members SET lastLoginIP='" + getIp(session) + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
+			MySqlInstance.query("UPDATE pn_members SET lastLanguageUsed='" + language + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
 		} catch (SQLException ex) { System.out.println(ex.toString()); }
+		
 		session.setAttribute("player", p);
 		/*
 		 * Send success packet to player, set their map and add them to a movement service
@@ -442,7 +443,7 @@ public class LoginManager implements Runnable {
 			p.generateBadges(result.getString("badges"));
 			return p;
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			return null;
 		}
 	}
@@ -550,7 +551,7 @@ public class LoginManager implements Runnable {
 				p.setPpUp(0, data.getInt("ppUp3"));
 				return p;
 			} catch (Exception e) {
-				e.printStackTrace();
+				e.printStackTrace(System.out);
 			}
 		}
 		return null;
@@ -569,7 +570,7 @@ public class LoginManager implements Runnable {
 			}
 			return b;
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			return null;
 		}
 		

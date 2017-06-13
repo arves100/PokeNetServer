@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50718
 File Encoding         : 65001
 
-Date: 2017-06-13 13:45:37
+Date: 2017-06-13 14:51:35
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -26,6 +26,14 @@ CREATE TABLE `pn_bag` (
   UNIQUE KEY `memberitem` (`member`,`item`),
   KEY `Memberid` (`member`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+
+-- ----------------------------
+-- Table structure for pn_bans
+-- ----------------------------
+DROP TABLE IF EXISTS `pn_bans`;
+CREATE TABLE `pn_bans` (
+  `ip` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for pn_box
@@ -163,6 +171,7 @@ CREATE TABLE `pn_pokemon` (
   `itemName` varchar(28) DEFAULT NULL,
   `isShiny` varchar(5) DEFAULT NULL,
   `originalTrainerName` varchar(12) DEFAULT NULL,
+  `currentTrainerName` varchar(12) DEFAULT NULL,
   `move0` varchar(32) DEFAULT NULL,
   `move1` varchar(32) DEFAULT NULL,
   `move2` varchar(32) DEFAULT NULL,
