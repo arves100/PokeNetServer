@@ -48,7 +48,7 @@ public class TcpProtocolHandler extends IoHandlerAdapter {
 	@Override
 	public void sessionCreated(IoSession session) {
 		//Tell the client which revision the server is on
-		session.write(GameServer.REVISION);
+		session.write("R" + GameServer.REVISION);
 	}
 	
 	/**
