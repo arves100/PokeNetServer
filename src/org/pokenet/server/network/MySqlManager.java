@@ -28,6 +28,14 @@ public class MySqlManager {
      * @return
      */
     public boolean connect(String server, String port, String username, String password) {
+		System.out.println("INFO: Connecting to MySQL Server...");
+		// Load the MySQL JDBC Drver
+        try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}		
         try {
             //Open Connection
             mysql_connectionURL = "jdbc:mysql://" + server+":" + port+ "?autoReconnect=true";
@@ -37,7 +45,8 @@ public class MySqlManager {
             else
             	return false;
         } catch ( SQLException x ) {
-        	System.out.println("SQLException: " + x.getMessage() + "(State: " + x.getSQLState() + ")");
+        	System.out.println(x.toString() + "(State: " + x.getSQLState() + ")");
+        	x.printStackTrace();
         	return false;
         }
     }

@@ -78,14 +78,6 @@ public class NetworkService {
 	 * Start this network service by starting all threads.
 	 */
 	public boolean start() {
-		//Load MySQL JDBC Driver
-		System.out.println("INFO: Connecting to MySQL Server...");
-        try {
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
 		/*
 		 * Ensure anyone still marked as logged in on this server
 		 * is unmarked
