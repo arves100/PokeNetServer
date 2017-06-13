@@ -99,8 +99,8 @@ public class GameServer {
 	 *
 	 * @return the value on the third line of .svn/entries
 	 */
-	private static int getSVNRev() {
-		int rev = 0;
+	private static String getSVNRev() {
+		String rev = "";
 		boolean foundRevision = false;
 		
 	    try {
@@ -110,7 +110,7 @@ public class GameServer {
 	     
 	    		while (( line = input.readLine()) != null && !foundRevision){
 	    			if(line.equals("dir")){
-	    				rev = Integer.parseInt(input.readLine()); // this hopefully is the revision number
+	    				rev = "svn: " + input.readLine(); // this hopefully is the revision number
 	    				foundRevision = true;
 	    			}
 	    		}
@@ -121,7 +121,7 @@ public class GameServer {
 	    catch (IOException ex){
 //	    	ex.printStackTrace();
 	    	// probably no svn file... oh well.
-	    	rev = 0;
+	    	rev = "(null)";
 	    }
 	    
 	    return rev;
@@ -129,11 +129,11 @@ public class GameServer {
 	
 	private static String getGITRev()
 	{
-		String rev = "(null)";
+		String rev = "";
 		
 		try {
 			BufferedReader input = new BufferedReader(new FileReader(".git/refs/heads/master"));
-			rev = input.readLine(); // this is git revision isn't it?
+			rev = "git: " + input.readLine(); // this is git revision isn't it?
 			input.close();
 		} catch (IOException ex)
 		{
@@ -143,14 +143,15 @@ public class GameServer {
 	}
 	
 	private static String getRev() {
-		String rev = String.valueOf(getSVNRev());
-		if (!rev.equals("0")) //Wow, we're using Subversion
+		String rev = getSVNRev();
+		if (!rev.equals("(null)")) //Wow, we're using Subversion
 			return rev;
 		rev = getGITRev();
 		if (!rev.equals("(null)")) //We're using Git
 			return rev;
 		
-		return "1868"; //Return base revision
+		//return "1868"; //Return base revision
+		return "0.1";
 	}
 	
 	
@@ -185,7 +186,7 @@ public class GameServer {
 	 * Default constructor
 	 */
 	public GameServer(boolean autorun) {
-		System.out.println("Revsion: " + REVISION);
+		System.out.println("PokeNet Server (ByCyr Fork) Revsion: " + REVISION);
 		m_instance = this;
 		if(autorun){
 			loadSettings();
