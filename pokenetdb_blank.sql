@@ -1,32 +1,25 @@
--- MySQL Administrator dump 1.4
---
--- ------------------------------------------------------
--- Server version	5.1.34
+/*
+Navicat MySQL Data Transfer
 
+Source Server         : MySQL
+Source Server Version : 50718
+Source Host           : localhost:3310
+Source Database       : pokenet
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+Target Server Type    : MYSQL
+Target Server Version : 50718
+File Encoding         : 65001
 
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+Date: 2017-06-13 13:45:37
+*/
 
+SET FOREIGN_KEY_CHECKS=0;
 
---
--- Create schema pokenet
---
-
-CREATE DATABASE IF NOT EXISTS pokenet;
-USE pokenet;
-
---
--- Definition of table `pokenet`.`pn_bag`
---
-
-DROP TABLE IF EXISTS `pokenet`.`pn_bag`;
-CREATE TABLE  `pokenet`.`pn_bag` (
+-- ----------------------------
+-- Table structure for pn_bag
+-- ----------------------------
+DROP TABLE IF EXISTS `pn_bag`;
+CREATE TABLE `pn_bag` (
   `member` int(11) NOT NULL,
   `item` int(11) NOT NULL,
   `quantity` int(11) NOT NULL,
@@ -34,22 +27,11 @@ CREATE TABLE  `pokenet`.`pn_bag` (
   KEY `Memberid` (`member`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
---
--- Dumping data for table `pokenet`.`pn_bag`
---
-
-/*!40000 ALTER TABLE `pn_bag` DISABLE KEYS */;
-LOCK TABLES `pn_bag` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `pn_bag` ENABLE KEYS */;
-
-
---
--- Definition of table `pokenet`.`pn_box`
---
-
-DROP TABLE IF EXISTS `pokenet`.`pn_box`;
-CREATE TABLE  `pokenet`.`pn_box` (
+-- ----------------------------
+-- Table structure for pn_box
+-- ----------------------------
+DROP TABLE IF EXISTS `pn_box`;
+CREATE TABLE `pn_box` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `member` int(11) DEFAULT NULL,
   `pokemon0` int(11) DEFAULT NULL,
@@ -85,22 +67,11 @@ CREATE TABLE  `pokenet`.`pn_box` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `pokenet`.`pn_box`
---
-
-/*!40000 ALTER TABLE `pn_box` DISABLE KEYS */;
-LOCK TABLES `pn_box` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `pn_box` ENABLE KEYS */;
-
-
---
--- Definition of table `pokenet`.`pn_members`
---
-
-DROP TABLE IF EXISTS `pokenet`.`pn_members`;
-CREATE TABLE  `pokenet`.`pn_members` (
+-- ----------------------------
+-- Table structure for pn_members
+-- ----------------------------
+DROP TABLE IF EXISTS `pn_members`;
+CREATE TABLE `pn_members` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(12) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
@@ -131,25 +102,16 @@ CREATE TABLE  `pokenet`.`pn_members` (
   `healMapY` int(11) DEFAULT NULL,
   `isSurfing` varchar(5) DEFAULT NULL,
   `adminLevel` int(11) DEFAULT NULL,
+  `muted` varchar(5) DEFAULT '0',
+  `party` int(11) DEFAULT '-1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `pokenet`.`pn_members`
---
-
-/*!40000 ALTER TABLE `pn_members` DISABLE KEYS */;
-LOCK TABLES `pn_members` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `pn_members` ENABLE KEYS */;
-
-
---
--- Definition of table `pokenet`.`pn_mypokes`
---
-
-DROP TABLE IF EXISTS `pokenet`.`pn_mypokes`;
-CREATE TABLE  `pokenet`.`pn_mypokes` (
+-- ----------------------------
+-- Table structure for pn_mypokes
+-- ----------------------------
+DROP TABLE IF EXISTS `pn_mypokes`;
+CREATE TABLE `pn_mypokes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `member` int(11) DEFAULT NULL,
   `party` int(11) DEFAULT NULL,
@@ -165,22 +127,11 @@ CREATE TABLE  `pokenet`.`pn_mypokes` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `pokenet`.`pn_mypokes`
---
-
-/*!40000 ALTER TABLE `pn_mypokes` DISABLE KEYS */;
-LOCK TABLES `pn_mypokes` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `pn_mypokes` ENABLE KEYS */;
-
-
---
--- Definition of table `pokenet`.`pn_party`
---
-
-DROP TABLE IF EXISTS `pokenet`.`pn_party`;
-CREATE TABLE  `pokenet`.`pn_party` (
+-- ----------------------------
+-- Table structure for pn_party
+-- ----------------------------
+DROP TABLE IF EXISTS `pn_party`;
+CREATE TABLE `pn_party` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `member` int(11) DEFAULT NULL,
   `pokemon0` int(11) DEFAULT NULL,
@@ -190,24 +141,13 @@ CREATE TABLE  `pokenet`.`pn_party` (
   `pokemon4` int(11) DEFAULT NULL,
   `pokemon5` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
---
--- Dumping data for table `pokenet`.`pn_party`
---
-
-/*!40000 ALTER TABLE `pn_party` DISABLE KEYS */;
-LOCK TABLES `pn_party` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `pn_party` ENABLE KEYS */;
-
-
---
--- Definition of table `pokenet`.`pn_pokemon`
---
-
-DROP TABLE IF EXISTS `pokenet`.`pn_pokemon`;
-CREATE TABLE  `pokenet`.`pn_pokemon` (
+-- ----------------------------
+-- Table structure for pn_pokemon
+-- ----------------------------
+DROP TABLE IF EXISTS `pn_pokemon`;
+CREATE TABLE `pn_pokemon` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(24) DEFAULT NULL,
   `speciesName` varchar(32) DEFAULT NULL,
@@ -260,23 +200,3 @@ CREATE TABLE  `pokenet`.`pn_pokemon` (
   `date` varchar(28) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `pokenet`.`pn_pokemon`
---
-
-/*!40000 ALTER TABLE `pn_pokemon` DISABLE KEYS */;
-LOCK TABLES `pn_pokemon` WRITE;
-UNLOCK TABLES;
-/*!40000 ALTER TABLE `pn_pokemon` ENABLE KEYS */;
-
-
-
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
