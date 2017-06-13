@@ -73,7 +73,7 @@ public class TcpProtocolHandler extends IoHandlerAdapter {
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
 		}
-		t.printStackTrace();
+		t.printStackTrace(System.out);
 	}
 	
 	/**
@@ -544,7 +544,7 @@ public class TcpProtocolHandler extends IoHandlerAdapter {
 				m_players.remove(p);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		}
 	}
 	

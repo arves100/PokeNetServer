@@ -472,7 +472,7 @@ public class NpcBattleField extends BattleField {
 					moveID = getMechanics().getRandom().nextInt(4);
 				queueMove(1, BattleTurn.getMoveTurn(moveID));
 			} catch (Exception e) {
-				e.printStackTrace();
+				e.printStackTrace(System.out);
 			}
 		}
 	}
@@ -508,7 +508,7 @@ public class NpcBattleField extends BattleField {
 					this.switchInPokemon(1, BattleTurn.getSwitchTurn(index).getId());
 	                requestMoves();
 				} catch (Exception e) {
-					e.printStackTrace();
+					e.printStackTrace(System.out);
 				}
 			}
 		}

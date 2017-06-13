@@ -113,7 +113,7 @@ public class PokemonSpeciesData {
  
                 m_database[i] = new PokemonSpecies(i, name, base, genders);
             } catch (ClassNotFoundException e) {
-            	e.printStackTrace();
+            	e.printStackTrace(System.out);
                 throw new InternalError();
             }
         }
@@ -320,7 +320,7 @@ public class PokemonSpeciesData {
         			return true;
         	}
     	} catch (Exception e) {
-    		e.printStackTrace();
+    		e.printStackTrace(System.out);
     	}
         return false;
     }

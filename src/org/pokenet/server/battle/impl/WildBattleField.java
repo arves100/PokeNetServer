@@ -417,7 +417,7 @@ public class WildBattleField extends BattleField {
 			}
 			queueMove(1, BattleTurn.getMoveTurn(moveID));
 		} catch (MoveQueueException x) {
-			x.printStackTrace();
+			x.printStackTrace(System.out);
 		}
 	}
 
@@ -493,7 +493,7 @@ public class WildBattleField extends BattleField {
 			try {
 				this.queueMove(0, BattleTurn.getMoveTurn(-1));
 			} catch (MoveQueueException e) {
-				e.printStackTrace();
+				e.printStackTrace(System.out);
 			}
 		}
 	}

@@ -153,7 +153,7 @@ public class ItemProcessor implements Runnable {
 						return true;
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					e.printStackTrace(System.out);
 					return false;
 				}
 			} else if (i.getAttributes().contains(ItemAttribute.POKEMON)) {

@@ -34,7 +34,7 @@ public class BreedingLogic {
 				poke = generateHatchling(generateEggSpecies());
 				return new PokemonEgg(poke, 200);
 			} catch (Exception e) {
-				e.printStackTrace();
+				e.printStackTrace(System.out);
 				throw new Exception("BreedingException: Egg generation issue");
 			}
 		} else {

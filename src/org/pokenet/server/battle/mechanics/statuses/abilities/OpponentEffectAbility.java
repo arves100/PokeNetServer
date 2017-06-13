@@ -48,7 +48,7 @@ public abstract class OpponentEffectAbility extends IntrinsicAbility {
 						p.getField().removeEffect(m_effect);
 				}
 		} catch(NullPointerException npe) {
-			npe.printStackTrace();
+			npe.printStackTrace(System.out);
 		}
 	}
 

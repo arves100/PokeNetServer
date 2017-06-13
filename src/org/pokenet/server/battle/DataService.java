@@ -96,7 +96,7 @@ public class DataService {
 			m_nonTrades.add("Empoleon");
 			System.out.println("INFO: Trade Block List established.");
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		}
 	}
 	
@@ -121,7 +121,7 @@ public class DataService {
 		try {
 			m_speciesData.loadSpeciesDatabase(new File("./res/dpspecies.db"));
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			e1.printStackTrace(System.out);
 			return;
 		}
 		Ini ini = null;
@@ -129,7 +129,7 @@ public class DataService {
 		try {
 			ini = new Ini(new FileInputStream("./res/pokemon.ini"));
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			return;
 		}
 		for (int i = 0; i < 493; i++) {
@@ -174,7 +174,7 @@ public class DataService {
 		try {
 			ini = new Ini(new FileInputStream("./res/tms.ini"));
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			return;
 		}
 		Iterator<String> iterator = ini.keySet().iterator();
@@ -245,7 +245,7 @@ public class DataService {
 			}
 			s.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			return;
 		}
 	}

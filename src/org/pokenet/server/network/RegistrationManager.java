@@ -200,7 +200,17 @@ public class RegistrationManager implements Runnable {
 			Pokemon p = this.createStarter(s);
 			p.setOriginalTrainer(info[0]);
 			p.setDateCaught(new SimpleDateFormat("yyyy-MM-dd:HH-mm-ss").format(new Date()));
-			this.saveNewPokemon(p);
+			if (!this.saveNewPokemon(p)) {
+				try {
+					MySqlInstance.query("DELETE FROM pn_members WHERE username='" + MySqlManager.parseSQL(info[0]) + "'");
+				} catch (SQLException ex) {
+					ex.printStackTrace(System.out);
+				}
+				
+				session.resumeRead();
+				session.resumeWrite();
+				session.write("r3");			
+			}
 			
 			MySqlInstance.query("INSERT INTO pn_party (member, pokemon0, pokemon1, pokemon2, pokemon3, pokemon4, pokemon5) VALUES ('" +
 					+ playerId + "','" + p.getDatabaseID() + "','-1','-1','-1','-1','-1')");

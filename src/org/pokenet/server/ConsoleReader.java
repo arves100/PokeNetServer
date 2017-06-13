@@ -26,7 +26,7 @@ public class ConsoleReader {
 		try { 
 			br = new BufferedReader(new FileReader(f));
 		} 
-		catch (FileNotFoundException e) {e.printStackTrace();}
+		catch (FileNotFoundException e) {e.printStackTrace(System.out);}
 	}
 
 	/**
@@ -273,7 +273,7 @@ public class ConsoleReader {
 			br.close();
 		} 
 		catch(IOException e) { 
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		}
 	}    
 }

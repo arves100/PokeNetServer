@@ -78,7 +78,7 @@ public class FishDatabase {
 					s.close();
 					System.out.println("INFO: Fishing database reinitialised");
 				} catch (Exception e) {
-					e.printStackTrace();
+					e.printStackTrace(System.out);
 				}
 			}
 		});

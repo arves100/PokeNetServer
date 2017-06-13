@@ -26,7 +26,7 @@ public class UdpProtocolHandler extends IoHandlerAdapter {
 	 * Called when an exception is caught
 	 */
 	public void exceptionCaught(IoSession session, Throwable t) throws Exception {
-		t.printStackTrace();
+		t.printStackTrace(System.out);
 	}
 	
 	@Override 
@@ -62,7 +62,7 @@ public class UdpProtocolHandler extends IoHandlerAdapter {
 			if(s.isConnected())
 				s.write(m.getMessage());
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		}
 	}
 }

@@ -149,7 +149,7 @@ public class DataLoader implements Runnable {
 			}
 			reader.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			System.err.println("Error in " + m_map.getX() + "." + m_map.getY() + ".txt - Invalid NPC, " +
 					"HM Object or WarpTile");
 		}

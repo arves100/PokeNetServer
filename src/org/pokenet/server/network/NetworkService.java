@@ -118,7 +118,7 @@ public class NetworkService {
 			m_tcpAcceptor.bind(new InetSocketAddress(7002)); 
 			System.out.println("INFO: TCP acceptor started.");
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			stop();
 			return false;
 		}
@@ -136,7 +136,7 @@ public class NetworkService {
 			m_udpAcceptor.bind(new InetSocketAddress(7005)); 
 			System.out.println("INFO: UDP acceptor started.");
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			stop();
 			return false;
 		}

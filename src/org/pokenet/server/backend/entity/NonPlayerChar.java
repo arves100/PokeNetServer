@@ -257,7 +257,7 @@ public class NonPlayerChar extends Char {
 			try{
 			m_shop = new Shop(b);
 			m_shop.start();
-			} catch (Exception e){e.printStackTrace();}
+			} catch (Exception e){e.printStackTrace(System.out);}
 		}
 	}
 	

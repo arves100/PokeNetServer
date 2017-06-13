@@ -80,7 +80,7 @@ public class RecoilMove extends PokemonMove {
 			}
 			return damage;
 		} catch(NullPointerException npe) {
-			npe.printStackTrace();
+			npe.printStackTrace(System.out);
 		}
 		return 0;
 	}

@@ -172,9 +172,9 @@ public class ModData {
             m_items.saveItemData(output);
             m_moves.saveMoveList(output);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
     
@@ -227,9 +227,9 @@ public class ModData {
             m_species.cacheMoveSets(m_moves, m_moveSets, false);
             m_map.put(m_uuid, this);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(System.out);
         }
     }
     
@@ -442,7 +442,7 @@ public class ModData {
             try {
                 parsePatchLine(buffer.toString(), category);
             } catch (Exception e) {
-                e.printStackTrace();
+                e.printStackTrace(System.out);
             }
         }
     }

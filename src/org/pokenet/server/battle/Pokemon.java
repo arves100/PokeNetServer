@@ -2153,7 +2153,7 @@ public class Pokemon extends PokemonSpecies {
 			m_ability = IntrinsicAbility.getInstance(abilities[DataService
 			                                                   .getBattleMechanics().getRandom().nextInt(abilities.length)]);
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		}
 		calculateStats(m_base, m_iv, m_ev);
 		m_evolution = null;

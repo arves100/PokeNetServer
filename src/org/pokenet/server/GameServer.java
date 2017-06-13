@@ -89,7 +89,7 @@ public class GameServer {
 				m_dbPassword = s.nextLine();
 				s.close();
 			} catch (Exception e) {
-				e.printStackTrace();
+				e.printStackTrace(System.out);
 			}
 		}
 	}
@@ -119,7 +119,7 @@ public class GameServer {
 	      	}	
 	    }
 	    catch (IOException ex){
-//	    	ex.printStackTrace();
+//	    	ex.printStackTrace(System.out);
 	    	// probably no svn file... oh well.
 	    	rev = "(null)";
 	    }
@@ -417,7 +417,7 @@ public class GameServer {
 				m_port.setText(s.nextLine());
 				s.close();
 			} catch (Exception e) {
-				e.printStackTrace();
+				e.printStackTrace(System.out);
 			}
 		}
 		
@@ -517,7 +517,7 @@ public class GameServer {
 			w.flush();
 			w.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		}
 	}
 	
@@ -564,7 +564,7 @@ public class GameServer {
 			PrintStream p = new PrintStream(new File("./errors.txt"));
 			System.setErr(p);
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		}
 		
 		/*

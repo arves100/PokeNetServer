@@ -195,7 +195,7 @@ public class Trade implements Runnable{
 			try{
 				executeTrade();
 			} catch (Exception e){
-				e.printStackTrace();
+				e.printStackTrace(System.out);
 			}
 		}
 	}

@@ -237,7 +237,7 @@ public class LogoutManager implements Runnable {
 			} else
 				return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			return false;
 		}
 	}
@@ -333,7 +333,7 @@ public class LogoutManager implements Runnable {
 					"' WHERE id='" + p.getDatabaseID() + "'");
 			return result.getInt("id");
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			return -1;
 		}
 	}
@@ -379,7 +379,7 @@ try {			MySqlInstance.query("UPDATE pn_pokemon SET move0='" + (p.getMove(0) == n
 					"' WHERE id='" + p.getDatabaseID() + "'");
 }
 catch (NullPointerException e) {
-	e.printStackTrace();
+	e.printStackTrace(System.out);
 	System.out.println("Pokemon object is " + p);
 	System.out.println("Database ID is " + p.getDatabaseID());
 		System.out.println("Pokemon name is " + p.getName());
@@ -418,7 +418,7 @@ MySqlInstance.query("UPDATE pn_pokemon SET ivHP='" + p.getIv(0) +
 					"' WHERE id='" + p.getDatabaseID() + "'");
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			return false;
 		}
 	}
@@ -445,7 +445,7 @@ MySqlInstance.query("UPDATE pn_pokemon SET ivHP='" + p.getIv(0) +
 			}
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			return false;
 		}
 	}

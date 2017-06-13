@@ -44,7 +44,7 @@ public class SpriteList {
 				s.close();
 				System.out.println("INFO: Sprite loaded");
 			} catch (Exception e) {
-				e.printStackTrace();
+				e.printStackTrace(System.out);
 			}
 		}
 		System.out.println("ERROR: Cannot load any sprite");
