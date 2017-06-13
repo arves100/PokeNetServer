@@ -186,7 +186,7 @@ public class GameServer {
 	 * Default constructor
 	 */
 	public GameServer(boolean autorun) {
-		System.out.println("PokeNet Server (ByCyr Fork) Revsion: " + REVISION);
+		System.out.println("PokeNet Server (ByCyr Fork) Version: " + REVISION);
 		m_instance = this;
 		if(autorun){
 			loadSettings();
