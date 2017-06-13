@@ -212,6 +212,8 @@ public class RegistrationManager implements Runnable {
 			MySqlInstance.query("UPDATE pn_members SET party='" + data.getInt("id") + "' WHERE id='" + playerId + "'");
 			/* Attach a bag of 5 pokeballs to the player */
 			MySqlInstance.query("INSERT INTO pn_bag (member,item,quantity) VALUES ('" + playerId + "', '35', '5')");
+			
+			
 			/*
 			 * Finish
 			 */
@@ -343,7 +345,7 @@ public class RegistrationManager implements Runnable {
 					"' WHERE id='" + p.getDatabaseID() + "'");
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			return false;
 		}
 	}
