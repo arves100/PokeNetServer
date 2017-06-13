@@ -104,7 +104,7 @@ public class MySqlManager {
      * @param query
      * @return
      */
-    public ResultSet query(String query){
+    public ResultSet query(String query) throws SQLException {
         //Create Statement object
         Statement stmt;
         
@@ -124,14 +124,9 @@ public class MySqlManager {
         if (query.startsWith("SELECT")) {
             //Use the "executeQuery" function because we have to retrieve data
             //Return the data as a resultset
-            try{
-                //Execute Query
-                stmt = mysql_connection.createStatement();
-                mysql_result = stmt.executeQuery(query);
-            }
-            catch(Exception x) {
-                x.printStackTrace();
-            }
+            //Execute Query
+            stmt = mysql_connection.createStatement();
+            mysql_result = stmt.executeQuery(query);
             
             //Return Result
             return mysql_result;
@@ -139,14 +134,9 @@ public class MySqlManager {
         else {
             //It's an UPDATE, INSERT, or DELETE statement
             //Use the"executeUpdaye" function and return a null result
-            try{
-                //Execute Query
-                stmt = mysql_connection.createStatement();
-                stmt.executeUpdate(query);
-            }
-            catch(Exception x) {
-                x.printStackTrace();
-            }
+            //Execute Query
+            stmt = mysql_connection.createStatement();
+            stmt.executeUpdate(query);
             
             //Return nothing
             return null;

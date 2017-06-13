@@ -1,20 +1,19 @@
 package org.pokenet.server.backend.entity;
 
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.pokenet.server.GameServer;
 import org.pokenet.server.backend.entity.TradeOffer.TradeType;
 import org.pokenet.server.battle.DataService;
 import org.pokenet.server.battle.Pokemon;
 import org.pokenet.server.battle.PokemonEvolution;
 import org.pokenet.server.battle.PokemonSpecies;
 import org.pokenet.server.battle.PokemonEvolution.EvolutionTypes;
-import org.pokenet.server.network.MySqlManager;
-
+import org.pokenet.server.network.MySqlInstance;
 /**
  * A trade between two players
  * @author shadowkanji
@@ -375,14 +374,14 @@ public class Trade implements Runnable{
 
 	public void run() {
 		/*Record Trade on History Table*/
-		MySqlManager m_database = new MySqlManager();
-		if(m_database.connect(GameServer.getDatabaseHost(), GameServer.getDatabasePort(),GameServer.getDatabaseUsername(), GameServer.getDatabasePassword())){
-			m_database.selectDatabase(GameServer.getDatabaseName());
-			while(!m_queries.isEmpty()){
-				m_database.query(m_queries.get(0));
-				m_queries.remove(0);
+		while(!m_queries.isEmpty()){
+			try {
+			MySqlInstance.query(m_queries.get(0));
+			} catch (SQLException ex) {
+				System.out.println(ex.toString());
+				return;
 			}
+			m_queries.remove(0);
 		}
-		m_database.close();
 	}
 }

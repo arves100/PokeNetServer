@@ -159,8 +159,11 @@ public class LoginManager implements Runnable {
 			/*
 			 * Something went wrong so make sure the player is registered as logged out
 			 */
+			try {
 			MySqlInstance.query("UPDATE pn_members SET lastLoginServer='null' WHERE username='" + MySqlManager.parseSQL(username) + "'");
-			MySqlInstance.close();
+			} catch (SQLException ex) {
+				
+			}
 		}
 	}
 	
@@ -268,8 +271,8 @@ public class LoginManager implements Runnable {
 	 * @param session
 	 */
 	private void changePass(String username, String newPassword, String oldPassword, IoSession session) {
-		ResultSet result = MySqlInstance.query("SELECT * FROM pn_members WHERE username='" + MySqlManager.parseSQL(username) + "'");
 		try {
+			ResultSet result = MySqlInstance.query("SELECT * FROM pn_members WHERE username='" + MySqlManager.parseSQL(username) + "'");
 			if(result.first()){
 				// if we got a result, compare their old password to the one we have stored for them
 				if(result.getString("password").compareTo(oldPassword) == 0) {
@@ -307,9 +310,11 @@ public class LoginManager implements Runnable {
 		/*
 		 * Update the database with login information
 		 */
+		try {
 		MySqlInstance.query("UPDATE pn_members SET lastLoginServer='" + MySqlManager.parseSQL(GameServer.getServerName()) + "', lastLoginTime='" + time + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
 		MySqlInstance.query("UPDATE pn_members SET lastLoginIP='" + getIp(session) + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
 		MySqlInstance.query("UPDATE pn_members SET lastLanguageUsed='" + language + "' WHERE username='" + MySqlManager.parseSQL(username) + "'");
+		} catch (SQLException ex) { System.out.println(ex.toString()); }
 		session.setAttribute("player", p);
 		/*
 		 * Send success packet to player, set their map and add them to a movement service

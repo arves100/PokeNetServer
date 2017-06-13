@@ -1,5 +1,6 @@
 package org.pokenet.server.backend.entity;
 
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,7 +18,7 @@ import org.pokenet.server.battle.impl.PvPBattleField;
 import org.pokenet.server.battle.impl.WildBattleField;
 import org.pokenet.server.battle.mechanics.moves.PokemonMove;
 import org.pokenet.server.feature.TimeService;
-import org.pokenet.server.network.MySqlManager;
+import org.pokenet.server.network.MySqlInstance;
 import org.pokenet.server.network.TcpProtocolHandler;
 import org.pokenet.server.network.message.ItemMessage;
 import org.pokenet.server.network.message.SpriteChangeMessage;
@@ -188,16 +189,13 @@ public class PlayerChar extends Char implements Battleable, Tradeable {
 			if(m_boxes[box].getPokemon(slot).getDatabaseID() > -1) {
 				/* This box exists and the pokemon exists in the database */
 				int id = m_boxes[box].getPokemon(slot).getDatabaseID();
-				MySqlManager m = new MySqlManager();
-				if(m.connect(GameServer.getDatabaseHost(), 
-						GameServer.getDatabasePort(),
-						GameServer.getDatabaseUsername(),
-						GameServer.getDatabasePassword())) {
-					m.selectDatabase(GameServer.getDatabaseName());
-					m.query("DELETE FROM pn_pokemon WHERE id='" + id + "'");
-					m.close();
-					m_boxes[box].setPokemon(slot, null);
+				try {
+				MySqlInstance.query("DELETE FROM pn_pokemon WHERE id='" + id + "'");
+				} catch (SQLException ex) {
+					System.out.println(ex.toString());
+					return;
 				}
+				m_boxes[box].setPokemon(slot, null);
 			} else {
 				/*
 				 * This Pokemon or box has not been saved to the

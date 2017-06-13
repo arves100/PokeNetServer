@@ -1,6 +1,7 @@
 package org.pokenet.server.network;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.pokenet.server.GameServer;
 
@@ -43,7 +44,7 @@ public class MySqlInstance {
 		return true;
 	}
 	
-	public static ResultSet query(String query) {
+	public static ResultSet query(String query) throws SQLException {
 		if (!isConnected)
 			return null;
 		

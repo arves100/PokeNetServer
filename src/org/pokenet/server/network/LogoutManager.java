@@ -1,6 +1,7 @@
 package org.pokenet.server.network;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -54,7 +55,9 @@ public class LogoutManager implements Runnable {
 			return false;
 		}
 		//Finally, store that the player is logged out and close connection
+		try {
 		MySqlInstance.query("UPDATE pn_members SET lastLoginServer='null' WHERE id='" + player.getId() + "'");
+		} catch (SQLException ex) { System.out.println(ex.toString()); }
 		GameServer.getServiceManager().getMovementService().removePlayer(player.getName());
 		return true;
 	}

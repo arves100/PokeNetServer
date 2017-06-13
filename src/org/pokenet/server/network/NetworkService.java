@@ -1,6 +1,7 @@
 package org.pokenet.server.network;
 
 import java.net.InetSocketAddress;
+import java.sql.SQLException;
 
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
 import org.apache.mina.core.service.IoAcceptor;
@@ -83,8 +84,12 @@ public class NetworkService {
 		 * is unmarked
 		 */
 		if(MySqlInstance.connect()) {
+			try {
 			MySqlInstance.query("UPDATE pn_members SET lastLoginServer='null' WHERE lastLoginServer='"
 					+ GameServer.getServerName() + "'");
+			} catch (SQLException ex) {
+				System.out.println(ex.toString());
+			}
 		} else {
 			System.out.println("ERROR: Cannot connect to MySQL Server");
 			return false;

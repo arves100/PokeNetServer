@@ -1,6 +1,7 @@
 package org.pokenet.server.network;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -87,34 +88,36 @@ public class RegistrationManager implements Runnable {
 			 * Check if the user exists
 			 */
 			ResultSet data = MySqlInstance.query("SELECT * FROM pn_members WHERE username='" + MySqlManager.parseSQL(info[0]) + "'");
-			data.first();
-			try {				
-				if(data != null && data.getString("username") != null && data.getString("username").equalsIgnoreCase(MySqlManager.parseSQL(info[0]))) {
-					session.resumeRead();
-					session.resumeWrite();
-					session.write("r2");
-					return;
-				}
-			} catch (Exception e) {}
+			if (data.first()) {
+				try {				
+					if(data != null && data.getString("username") != null && data.getString("username").equalsIgnoreCase(MySqlManager.parseSQL(info[0]))) {
+						session.resumeRead();
+						session.resumeWrite();
+						session.write("r2");
+						return;
+					}
+				} catch (Exception e) {}
+			}
 			/*
 			 * Check if an account is already registered with the email
 			 */
 			data = MySqlInstance.query("SELECT * FROM pn_members WHERE email='" + MySqlManager.parseSQL(info[2]) + "'");
-			data.first();
-			try {				
-				if(data != null && data.getString("email") != null && data.getString("email").equalsIgnoreCase(MySqlManager.parseSQL(info[2]))) {
-					session.resumeRead();
-					session.resumeWrite();
-					session.write("r5");
-					return;
-				}
-				if(info[2].length() > 52) {
-					session.resumeRead();
-					session.resumeWrite();
-					session.write("r6");
-					return;
-				}
-			} catch (Exception e) {}
+			if (data.first()) {
+				try {				
+					if(data != null && data.getString("email") != null && data.getString("email").equalsIgnoreCase(MySqlManager.parseSQL(info[2]))) {
+						session.resumeRead();
+						session.resumeWrite();
+						session.write("r5");
+						return;
+					}
+					if(info[2].length() > 52) {
+						session.resumeRead();
+						session.resumeWrite();
+						session.write("r6");
+						return;
+					}
+				} catch (Exception e) {}
+			}
 			/*
 			 * Check if user is not trying to register their starter as a non-starter Pokemon
 			 */
@@ -162,6 +165,7 @@ public class RegistrationManager implements Runnable {
 			/*
 			 * Insert player into database
 			 */
+			try {
 			MySqlInstance.query("INSERT INTO pn_members (username, password, dob, email, lastLoginTime, lastLoginServer, " +
 					"sprite, money, skHerb, skCraft, skFish, skTrain, skCoord, skBreed, " +
 					"x, y, mapX, mapY, badges, healX, healY, healMapX, healMapY, isSurfing, adminLevel, muted) VALUE " +
@@ -170,11 +174,24 @@ public class RegistrationManager implements Runnable {
 									"'0', '0', '0', '0', '0', '" + x + "', '" + y + "', " +
 									"'" + mapX + "', '" + mapY + "', '" + badges + "', '" + x + "', '" + y + "', '" 
 									+ mapX + "', '" + mapY + "', 'false', '0', 'false')");
+			} catch (SQLException ex) {
+				System.out.println("ERROR: " + ex.toString() + " (Status: " + ex.getSQLState() + ")");
+				session.resumeRead();
+				session.resumeWrite();
+				session.write("r3");
+				return;
+			}
 			/*
 			 * Retrieve the player's unique id
 			 */
 			data = MySqlInstance.query("SELECT * FROM pn_members WHERE username='" + MySqlManager.parseSQL(info[0]) + "'");
-			data.first();
+			if (!data.first()) {
+				System.out.println("ERROR: Cannot add user to registration!");
+				session.resumeRead();
+				session.resumeWrite();
+				session.write("r3");
+				return;
+			}
 			int playerId = data.getInt("id");
 			//Player's bag is now created "on the fly" as soon as player gets his first item. 
 			/*
@@ -220,6 +237,7 @@ public class RegistrationManager implements Runnable {
 						this.register(session);
 					} catch (Exception e) {
 						System.out.println(e.toString());
+						e.printStackTrace();
 						session.resumeRead();
 						session.resumeWrite();
 						session.write("r3");
