@@ -71,7 +71,7 @@ public class TcpProtocolHandler extends IoHandlerAdapter {
 			if(!(t instanceof IOException) || session.isConnected() || !session.isClosing())
 				session.close(true);
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 		}
 		t.printStackTrace();
 	}

@@ -96,7 +96,7 @@ public class RegistrationManager implements Runnable {
 						session.write("r2");
 						return;
 					}
-				} catch (Exception e) {}
+				} catch (Exception e) { e.printStackTrace(System.out); }
 			}
 			/*
 			 * Check if an account is already registered with the email
@@ -175,7 +175,7 @@ public class RegistrationManager implements Runnable {
 									"'" + mapX + "', '" + mapY + "', '" + badges + "', '" + x + "', '" + y + "', '" 
 									+ mapX + "', '" + mapY + "', 'false', '0', 'false')");
 			} catch (SQLException ex) {
-				System.out.println("ERROR: " + ex.toString() + " (Status: " + ex.getSQLState() + ")");
+				ex.printStackTrace(System.out);
 				session.resumeRead();
 				session.resumeWrite();
 				session.write("r3");
@@ -236,8 +236,7 @@ public class RegistrationManager implements Runnable {
 					try {
 						this.register(session);
 					} catch (Exception e) {
-						System.out.println(e.toString());
-						e.printStackTrace();
+						e.printStackTrace(System.out);
 						session.resumeRead();
 						session.resumeWrite();
 						session.write("r3");

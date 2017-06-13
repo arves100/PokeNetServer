@@ -154,7 +154,7 @@ public class LoginManager implements Runnable {
 				return;
 			}
 		} catch (Exception e) {
-			System.out.println(e.toString());
+			e.printStackTrace(System.out);
 			session.write("lu");
 			/*
 			 * Something went wrong so make sure the player is registered as logged out
@@ -162,7 +162,7 @@ public class LoginManager implements Runnable {
 			try {
 			MySqlInstance.query("UPDATE pn_members SET lastLoginServer='null' WHERE username='" + MySqlManager.parseSQL(username) + "'");
 			} catch (SQLException ex) {
-				System.out.println(ex.toString());
+				ex.printStackTrace(System.out);
 			}
 		}
 	}

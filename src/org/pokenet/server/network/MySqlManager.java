@@ -32,7 +32,7 @@ public class MySqlManager {
         try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (Exception e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
 			return false;
 		}		
         DriverLoaded = true;
@@ -61,8 +61,7 @@ public class MySqlManager {
             else
             	return true;
         } catch ( SQLException x ) {
-        	System.out.println(x.toString() + "(State: " + x.getSQLState() + ")");
-        	x.printStackTrace();
+        	x.printStackTrace(System.out);
         	return false;
         }
     }
@@ -78,7 +77,7 @@ public class MySqlManager {
         	stm.executeQuery("USE " + database);
         	return true;
     	} catch (Exception e) {
-    		e.printStackTrace();
+    		e.printStackTrace(System.out);
     		return false;
     	}
     }
@@ -94,7 +93,7 @@ public class MySqlManager {
             return true;
         }
         catch (Exception x) {
-             x.printStackTrace();
+        	 x.printStackTrace(System.out);
              return false;
         }
     }
@@ -149,7 +148,7 @@ public class MySqlManager {
 			if(text == null) text = "";
 			text = text.replace("'", "''");
 			text = text.replace("\\", "\\\\");
-		} catch (Exception e) {}
+		} catch (Exception e) { e.printStackTrace(System.out); }
 		return  text;
 	}
 }

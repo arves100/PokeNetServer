@@ -88,7 +88,7 @@ public class NetworkService {
 			MySqlInstance.query("UPDATE pn_members SET lastLoginServer='null' WHERE lastLoginServer='"
 					+ GameServer.getServerName() + "'");
 			} catch (SQLException ex) {
-				System.out.println(ex.toString());
+				ex.printStackTrace(System.out);
 			}
 		} else {
 			System.out.println("ERROR: Cannot connect to MySQL Server");
