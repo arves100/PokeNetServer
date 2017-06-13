@@ -38,12 +38,12 @@ public class MySqlManager {
 		}		
         try {
             //Open Connection
-            mysql_connectionURL = "jdbc:mysql://" + server+":" + port+ "?autoReconnect=true";
+            mysql_connectionURL = "jdbc:mysql://" + server+":" + port;
             mysql_connection = DriverManager.getConnection(mysql_connectionURL, username, password);
-            if(!mysql_connection.isClosed())
-            	return true;
-            else
+            if(mysql_connection.isClosed())
             	return false;
+            else
+            	return true;
         } catch ( SQLException x ) {
         	System.out.println(x.toString() + "(State: " + x.getSQLState() + ")");
         	x.printStackTrace();
