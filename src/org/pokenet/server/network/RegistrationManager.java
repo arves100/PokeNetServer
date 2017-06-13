@@ -219,7 +219,7 @@ public class RegistrationManager implements Runnable {
 					try {
 						this.register(session);
 					} catch (Exception e) {
-						e.printStackTrace();
+						System.out.println(e.toString());
 						session.resumeRead();
 						session.resumeWrite();
 						session.write("r3");
